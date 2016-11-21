@@ -9,7 +9,7 @@ mkdir -p ~/utils
 
 echo "=============== Set up paths and preferences ==============="
 export PATH="/root/bin:$PATH"
-
+echo "export PATH=/root/bin:$PATH" > /root/.bashrc
 
 echo .
 echo "=============== Installing Gitman ==============="
