@@ -15,12 +15,13 @@ echo .
 echo "=============== Installing Gitman ==============="
 git clone git@github.com:Jodes81/gitman.git ~/utils/gitman
 chmod 0755 ~/utils/gitman/setup
-~/turtle-pi
+~/utils/gitman/setup
 
 echo .
 echo "=============== Register turtle-pi repo with gitman ==============="
-add-repo ~/utils/misc
+add-repo ~/turtle-pi
 
+exit
 
 #echo .
 #echo "=============== Misc Utilities ==============="
