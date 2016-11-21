@@ -11,7 +11,7 @@ rm -rf ~/bin
 rm -rf ~/lib
 rm -rf ~/play
 rm -rf ~/utils
-
+rm -rf ~/repos
 
 
 
