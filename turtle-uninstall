@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#~/play/tjc/setdown
+~/utils/metrics/setdown
+#~/turtle-pi/autoshutdown/setdown
+~/utils/misc/setdown
+~/utils/gitman/setdown
+	
+rm -rf ~/tmp
+rm -rf ~/bin
+rm -rf ~/lib
+rm -rf ~/play
+rm -rf ~/utils
+
+
+
+
