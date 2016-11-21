@@ -7,11 +7,20 @@ mkdir -p ~/lib
 mkdir -p ~/play
 mkdir -p ~/utils
 
+echo "=============== Set up paths and preferences ==============="
+export PATH="/root/bin:$PATH"
+
+
 echo .
 echo "=============== Installing Gitman ==============="
 git clone git@github.com:Jodes81/gitman.git ~/utils/gitman
 chmod 0755 ~/utils/gitman/setup
-~/utils/gitman/setup
+~/turtle-pi
+
+echo .
+echo "=============== Register turtle-pi repo with gitman ==============="
+add-repo ~/utils/misc
+
 
 #echo .
 #echo "=============== Misc Utilities ==============="
@@ -30,10 +39,10 @@ popd
 
 #echo .
 #echo "=============== Auto shutdown ==============="
-git clone git@github.com:Jodes81/rpi-autoshutdown.git ~/turtle-pi/autoshutdown
-#chmod 0755 ~/turtle-pi/autoshutdown/setup
-#~/turtle-pi/autoshutdown/setup
-add-repo ~/turtle-pi/autoshutdown
+git clone git@github.com:Jodes81/rpi-autoshutdown.git ~/utils/autoshutdown
+#chmod 0755 ~/utils/autoshutdown/setup
+#~/utils/autoshutdown/setup
+add-repo ~/utils/autoshutdown
 
 #echo .
 #echo "=============== RPi Metrics ==============="
@@ -67,5 +76,5 @@ fi
 
 #echo .
 #echo "=============== Blockly ==============="
-git clone git@github.com:google/blockly.git ~/libs/blockly
+git clone git@github.com:google/blockly.git ~/lib/blockly
 
