@@ -1,5 +1,11 @@
 #!/bin/bash
 
+echo "."
+echo "========================================="
+echo "=========== Begin Uninstall ============="
+echo "========================================="
+echo "."
+
 #~/play/tjc/setdown
 ~/utils/metrics/setdown
 ~/turtle-pi/autoshutdown/setdown
@@ -13,6 +19,12 @@ rm -rf ~/lib
 rm -rf ~/play
 rm -rf ~/utils
 rm -rf ~/repos
+
+echo "."
+echo "========================================="
+echo "========== Uninstall Complete ==========="
+echo "========================================="
+echo "."
 
 
 
