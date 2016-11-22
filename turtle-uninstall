@@ -2,9 +2,10 @@
 
 #~/play/tjc/setdown
 ~/utils/metrics/setdown
-#~/turtle-pi/autoshutdown/setdown
+~/turtle-pi/autoshutdown/setdown
 ~/utils/misc/setdown
-~/utils/gitman/setdown
+#gitman: nothing to setdown!?
+#~/utils/gitman/setdown
 	
 rm -rf ~/tmp
 rm -rf ~/bin
