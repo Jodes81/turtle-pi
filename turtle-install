@@ -15,11 +15,16 @@ mkdir -p ~/lib
 mkdir -p ~/play
 mkdir -p ~/utils
 
+
 echo "=============== Set up paths and preferences ==============="
+
+echo "--- Set up path ---"
 export PATH="/root/bin:$PATH"
 cat <<EOT>> /root/.bashrc
 export PATH=/root/bin:$PATH
 EOT
+
+echo "--- Set up console size ---"
 cat <<EOT>> /root/.profile
 # Not sure what this stuff does, but it's the default in raspbian.
 # I just added the setting for stty size
@@ -33,6 +38,11 @@ mesg n
 stty cols 80 rows 80
 EOT
 
+echo "--- Set up binary links ---"
+chmod 0755 /root/turtle-pi/turtle-uninstall
+chmod 0755 /root/turtle-pi/reload-server
+ln -s /root/turtle-pi/reload-server /root/bin/
+
 echo .
 echo "=============== Installing Gitman ==============="
 git clone git@github.com:Jodes81/gitman.git ~/utils/gitman
@@ -40,7 +50,7 @@ chmod 0755 ~/utils/gitman/setup
 ~/utils/gitman/setup
 
 echo .
-echo "=============== Register turtle-pi repo with gitman ==============="
+echo "----------- Register turtle-pi repo with gitman --------"
 add-repo ~/turtle-pi
 
 echo .
