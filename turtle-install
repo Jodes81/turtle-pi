@@ -118,7 +118,7 @@ if [ ! -d /root/lib/node ]; then
     fi
     tar -xJf node-v6.7.0-linux-armv6l.tar.xz
   fi
-  cp -R node-v6.7.0-linux-armv6l/* /root/lib/node
+  cp -R node-v6.7.0-linux-armv6l /root/lib/node
   popd
 fi
 ln -s /root/lib/node/bin/node /root/bin/node
@@ -128,7 +128,7 @@ ln -s /root/lib/node/bin/npm /root/bin/npm
 
 echo .
 echo "=============== Blockly ==============="
-git clone git@github.com:google/blockly.git ~/lib/blockly
+git clone git@github.com:google/blockly.git ~/lib/blockly --depth 1
 
 echo .
 echo .
