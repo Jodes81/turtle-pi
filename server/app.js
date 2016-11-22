@@ -35,3 +35,9 @@ app.use('/blockly/media', express.static('/root/lib/blockly/media'));
 var server = app.listen(8080, function() {
     console.log('Express is listening to http://localhost:8080');
 });
+
+
+console.log('Initting wiringPi......');
+wpi.wiringPiSetup();
+wpi.pinMode(4, wpi.OUTPUT);
+wpi.digitalWrite(4, 1);
