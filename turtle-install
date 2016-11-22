@@ -91,9 +91,24 @@ add-repo ~/play/tjc
 
 echo .
 echo "=============== Node v6.7.0 ==============="
+
 apt-get remove nodejs -y
 
-if [ ! $(command -v node) ]; then
+#if [ ! $(command -v node) ]; then
+#  mkdir -p ~/tmp
+#  pushd ~/tmp
+#  if [ ! -d node-v6.7.0-linux-armv6l ]; then
+#    apt-get install xz-utils -y
+#    if [ ! -f node-v6.7.0-linux-armv6l.tar.xz ]; then
+#      wget https://nodejs.org/dist/v6.7.0/node-v6.7.0-linux-armv6l.tar.xz
+#    fi
+#    tar -xJf node-v6.7.0-linux-armv6l.tar.xz
+#  fi
+#  cp -R node-v6.7.0-linux-armv6l/* /usr/local/
+#  popd
+#fi
+
+if [ ! -d /root/lib/node ]; then
   mkdir -p ~/tmp
   pushd ~/tmp
   if [ ! -d node-v6.7.0-linux-armv6l ]; then
@@ -103,9 +118,13 @@ if [ ! $(command -v node) ]; then
     fi
     tar -xJf node-v6.7.0-linux-armv6l.tar.xz
   fi
-  cp -R node-v6.7.0-linux-armv6l/* /usr/local/
+  cp -R node-v6.7.0-linux-armv6l/* /root/lib/node
   popd
 fi
+ln -s /root/lib/node/bin/node /root/bin/node
+ln -s /root/lib/node/bin/npm /root/bin/npm
+
+
 
 echo .
 echo "=============== Blockly ==============="
