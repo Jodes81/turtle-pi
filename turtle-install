@@ -9,7 +9,21 @@ mkdir -p ~/utils
 
 echo "=============== Set up paths and preferences ==============="
 export PATH="/root/bin:$PATH"
-echo "export PATH=/root/bin:$PATH" > /root/.bashrc
+cat <<EOT>> /root/.bashrc
+export PATH=/root/bin:$PATH
+EOT
+cat <<EOT>> /root/.profile
+# Not sure what this stuff does, but it's the default in raspbian.
+# I just added the setting for stty size
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+mesg n
+stty cols 80 rows 80
+EOT
 
 echo .
 echo "=============== Installing Gitman ==============="
