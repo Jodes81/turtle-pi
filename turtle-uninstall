@@ -8,7 +8,7 @@ echo "."
 
 #~/play/tjc/setdown
 ~/utils/metrics/setdown
-~/turtle-pi/autoshutdown/setdown
+~/utils/autoshutdown/setdown
 ~/utils/misc/setdown
 #gitman: nothing to setdown!?
 #~/utils/gitman/setdown
