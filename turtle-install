@@ -40,8 +40,8 @@ EOT
 
 echo "--- Set up binary links ---"
 chmod 0755 /root/turtle-pi/turtle-uninstall
-chmod 0755 /root/turtle-pi/reload-server
-ln -s /root/turtle-pi/reload-server /root/bin/
+chmod 0755 /root/turtle-pi/bin/reload-server
+ln -s /root/turtle-pi/bin/reload-server /root/bin/
 
 echo .
 echo "=============== Installing Gitman ==============="
