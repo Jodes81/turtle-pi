@@ -81,6 +81,8 @@ add-repo ~/play/tjc
 
 echo .
 echo "=============== Node v6.7.0 ==============="
+apt-get remove nodejs -y
+
 if [ ! $(command -v node) ]; then
   mkdir -p ~/tmp
   pushd ~/tmp
