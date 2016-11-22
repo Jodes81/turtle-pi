@@ -1,5 +1,6 @@
 var express = require('express');
 var serveIndex = require('serve-index');
+var wpi = require('wiring-pi');
 var app = express();
 
 // ==========================================================
