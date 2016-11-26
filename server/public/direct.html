@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Turtle Direct Control</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="js/jquery.js"></script>
+        <script src="js/jquery.mobile.custom.complete.min.js"></script>
+        <link rel="stylesheet" href="css/jquery.mobile.custom.complete.theme.min.css"/>
+        <link rel="stylesheet" href="css/jquery.mobile.custom.complete.structure.min.css"/>
+        <script>
+            $(function(){
+                
+                $(document).on("mousedown", function(e){
+                    $('#status').html("mouse");
+                });
+                $(document).on("mouseup", function(e){
+                    $('#status').html("mouseup");
+                });
+                $(document).on("tap", function(e){
+                    $('#status').html("tap");
+                });
+                $(document).on("taphold", function(e){
+                    $('#status').html("taphold");
+                });
+                $(document).on("swipe", function(e){
+                    $('#status').html("swipe");
+                });
+                //$(document).on("mousemove", function(e){
+                //    console.log("Moved!", e);
+                //});
+                //$(document).on("click", function(e){
+                //    console.log("Click", e);
+                //});
+                
+                var ws = new WebSocket('ws://192.168.1.8:8080/bla');
+                ws.onmessage = function (event) {
+                    console.log(event.data);
+                };
+                $('#send').on("click", function(){
+                    ws.send("Hello!");
+                });
+            });
+        </script>
+        <style>
+        </style>
+    </head>
+    <body>
+        <div id="status">:)</div>
+        <input id="send" type="button" value="send"/>
+    </body>
+</html>
