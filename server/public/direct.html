@@ -4,41 +4,49 @@
         <title>Turtle Direct Control</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="js/jquery.js"></script>
-        <script src="js/jquery.mobile.custom.complete.min.js"></script>
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/led.css" />
+        <link rel="stylesheet" href="css/turtle.css" />
+
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.theme.min.css"/>
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.structure.min.css"/>
+        <script src="js/jquery.js"></script>
+        <script src="js/jquery.mobile.custom.complete.min.js"></script>
+        <script src="js/jquery.svg.min.js"></script>
+        <script src="js/jquery.svganim.min.js"></script>
+        <script src="js/jquery.svgdom.min.js"></script>
+        
+        <script src="js/turtle.js"></script>
+        
         <script>
+            
             $(function(){
+                var arrowPathStr = 'M4.35,0l-3.725,-3.725c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.725,-3.725ZM0.625,0l-3.725,-3.725c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.725,-3.725Z';
+                $("#arrow-top-left").svg({settings: {
+                        viewBox: "0 0 10 10",
+                        width: "60px",
+                        height: "60px",
+                        style:"border: 1px solid red"
+                    }});
+                var svg = $("#arrow-top-left").svg("get");
+                var obj = svg.path(arrowPathStr, {
+                    transform: "translate(5, 5) rotate(90, 0, 0)",
+                    fill: "#f00",
+                });
+                $(obj).animate({
+                    svgFill: '#0f0'
+                }, 1000);
                 
-                $(document).on("mousedown", function(e){
-                    $('#status').html("mouse");
-                });
-                $(document).on("mouseup", function(e){
-                    $('#status').html("mouseup");
-                });
-                $(document).on("tap", function(e){
-                    $('#status').html("tap");
-                });
-                $(document).on("taphold", function(e){
-                    $('#status').html("taphold");
-                });
-                $(document).on("swipe", function(e){
-                    $('#status').html("swipe");
-                });
-                //$(document).on("mousemove", function(e){
-                //    console.log("Moved!", e);
-                //});
-                //$(document).on("click", function(e){
-                //    console.log("Click", e);
-                //});
+                var turtle = new Turtle({selector: 'div.turtle'});
+                turtle.draw();
                 
                 var ws = new WebSocket('ws://192.168.1.8:8080/bla');
                 ws.onmessage = function (event) {
                     console.log(event.data);
                 };
                 $('#send').on("click", function(){
-                    ws.send("Hello!");
+                    $('#button').html("button");
+                    ws.send("Socket!");
                 });
             });
         </script>
@@ -46,7 +54,49 @@
         </style>
     </head>
     <body>
-        <div id="status">:)</div>
+        <div id="arrow-top-left"></div>
+        <div class="turtle"></div>
+        
+        <div id="socket">-</div>
+        <div id="button">-</div>
         <input id="send" type="button" value="send"/>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
+             xmlns:xlink="http://www.w3.org/1999/xlink" 
+             viewBox="0 0 10 10">
+                <path 
+                      id="arrow"
+                      d="M4.35,0l-3.725,-3.7249999046325684c-0.625,-0.625,-1.875,
+                      0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,
+                      1.25l3.7249999046325684,-3.7249999046325684ZM0.625,0l-3.7249999046325684,
+                      -3.7249999046325684c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,
+                      2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.7249999046325684,-3.7249999046325684Z" 
+                      transform="translate(5, 5) rotate(90, 0, 0)" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
+             xmlns:xlink="http://www.w3.org/1999/xlink" 
+             viewBox="0 0 10 10">
+            <defs>
+                <path 
+                      id="arrow"
+                      d="M4.35,0l-3.725,-3.7249999046325684c-0.625,-0.625,-1.875,
+                      0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,
+                      1.25l3.7249999046325684,-3.7249999046325684ZM0.625,0l-3.7249999046325684,
+                      -3.7249999046325684c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,
+                      2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.7249999046325684,-3.7249999046325684Z" 
+                      transform="translate(5, 5) rotate(90, 0, 0)" />
+            </defs>
+            <use xlink:href="#arrow" stroke-width="0" fill="#afa" stroke="#181" >
+                <animate id="a1" attributeType="XML" attributeName="stroke-width" 
+                        from="0.0" to="0.4" begin="0;a2.end" dur="0.3s"/>
+                <animate id="a2" attributeType="XML" attributeName="stroke-width" 
+                        from="0.4" to="0.0"  begin="a1.end" dur="0.3s"/>
+            </use>
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
+             xmlns:xlink="http://www.w3.org/1999/xlink" 
+             viewBox="0 0 10 10">
+            <use xlink:href="#arrow" stroke-width="0.2" fill="#eee" stroke="#bbb" transform="rotate(180, 5, 5)"/>
+        </svg>
     </body>
 </html>

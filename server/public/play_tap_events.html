@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Turtle Direct Control</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/main.css" />
+        <link rel="stylesheet" href="css/led.css" />
+        <!--
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+        -->
+        <!--
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        -->
+        <link rel="stylesheet" href="css/jquery.mobile.custom.complete.theme.min.css"/>
+        <link rel="stylesheet" href="css/jquery.mobile.custom.complete.structure.min.css"/>
+        <script src="js/jquery.js"></script>
+        <script src="js/jquery.mobile.custom.complete.min.js"></script>
+        
+        <script>
+            $(function(){
+                $('#support').html($.support.touch);
+                
+                $(document).on("mousedown", function(e){
+                    $('#mousedown').html("mousedown");
+                });
+                $(document).on("mouseup", function(e){
+                    $('#mouseup').html("mouseup");
+                });
+                $(document).on("mousemove", function(e){
+                    $('#mousemove').html("mousemove");
+                });
+                $(document).on("touchstart", function(e){
+                    $('#touchstart').html("touchstart");
+                });
+                $(document).on("touchend", function(e){
+                    $('#touchend').html("touchend");
+                });
+                $(document).on("touchmove", function(e){
+                    $('#touchmove').html("touchmove");
+                });
+                $(document).on("touchcancel", function(e){
+                    $('#touchcancel').html("touchcancel");
+                });
+                $(document).on("tap", function(e){
+                    $('#tap').html("tap");
+                });
+                $(document).on("taphold", function(e){
+                    $('#taphold').html("taphold");
+                });
+                $(document).on("swipe", function(e){
+                    $('#swipe').html("swipe");
+                });
+                //$(document).on("mousemove", function(e){
+                //    console.log("Moved!", e);
+                //});
+                //$(document).on("click", function(e){
+                //    console.log("Click", e);
+                //});
+                
+                var ws = new WebSocket('ws://192.168.1.8:8080/bla');
+                ws.onmessage = function (event) {
+                    console.log(event.data);
+                };
+                $('#send').on("click", function(){
+                    $('#button').html("button");
+                    ws.send("Socket!");
+                });
+            });
+        </script>
+        <style>
+        </style>
+    </head>
+    <body>
+        <div id="support">-</div>
+        <div id="mousedown">-</div>
+        <div id="mouseup">-</div>
+        <div id="mousemove">-</div>
+        <div id="touchstart">-</div>
+        <div id="touchend">-</div>
+        <div id="touchmove">-</div>
+        <div id="touchcancel">-</div>
+        <div id="tap">-</div>
+        <div id="taphold">-</div>
+        <div id="swipe">-</div>
+        <div id="socket">-</div>
+        <div id="button">-</div>
+        <input id="send" type="button" value="send"/>
+    </body>
+</html>
