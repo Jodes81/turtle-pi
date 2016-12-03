@@ -1,25 +1,21 @@
 .turtle {
-    margin: 40px;
-    width: 200px;
-    height: 220px;
-    border-radius: 30%;
-    border: 2px solid #777;
-    background-color: #bbb;
+    border: 1px solid red;
+    display: inline-block;
     position: relative;
+}
+.turtle .body {
+    border-radius: 30%;
+    background-color: #bbb;
+    position: absolute;
 }
 
 .turtle .wheel {
-    width: 30px;
-    height: 70px;
     border-radius: 9px;
-    border: 3px solid #555;
     background-color: #f8f844;
     position: absolute;
-    top: 80px;
 }
-.turtle .wheel-left {
-    left: -30px;
-}
-.turtle .wheel-right {
-    right: -30px; 
+
+.turtle .double-arrow {
+    position: absolute;
+    font-size: 0px;
 }
