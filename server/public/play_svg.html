@@ -25,12 +25,28 @@
         
         <script>
             $(function(){
+                var turtle = new Turtle({
+                    selector: 'div.turtle'
+                });
+                var ws = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/bla');
+                ws.onmessage = function (event) {
+                    console.log(event.data);
+                };
+                $('#send').on("click", function(){
+                    $('#button').html("button");
+                    ws.send("Socket!");
+                });
             });
         </script>
         <style>
         </style>
     </head>
     <body>
+        <div class="turtle" style="width: 300px; height: 300px"></div>
+        
+        <div id="socket">-</div>
+        <div id="button">-</div>
+        <input id="send" type="button" value="send"/>
 
         <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
              xmlns:xlink="http://www.w3.org/1999/xlink" 
