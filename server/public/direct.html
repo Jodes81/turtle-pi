@@ -7,68 +7,75 @@
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="css/led.css" />
         <link rel="stylesheet" href="css/turtle.css" />
+        <link rel="stylesheet" href="css/joystick.css" />
 
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.theme.min.css"/>
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.structure.min.css"/>
-        <script src="js/jquery.js"></script>
-        <script src="js/jquery.mobile.custom.complete.min.js"></script>
+        <script src="lib/jquery.js"></script>
+        <script src="lib/jquery.mobile.custom.complete.min.js"></script>
         
-        <script src="js/jquery.svg.min.js"></script>
-        <script src="js/jquery.svganim.min.js"></script>
-        <script src="js/jquery.svgdom.min.js"></script>
+        <script src="lib/jquery.svg.min.js"></script>
+        <script src="lib/jquery.svganim.min.js"></script>
+        <script src="lib/jquery.svgdom.min.js"></script>
         
         <script src="js/utils.js"></script>
         <script src="js/turtle.js"></script>
         <script src="js/wheel.js"></script>
         <script src="js/arrow.js"></script>
-        <script src="js/sensor.js"></script>
+        <script src="js/led.js"></script>
+        <script src="js/joystick.js"></script>
+        <script src="js/server.js"></script>
         
         <script>
+            var t, j, server;
             $(function(){
+                
+                j = new Joystick({selector: "div.joystick"});
+                t = new Turtle({
+                    selector: "div.turtle",
+                    onCommand: function(wheel, direction){
+                        server.send(JSON.stringify({
+                            msgFor: "wheel",
+                            name: wheel,
+                            value: direction
+                        }));
+                    }
+                });
+                
+                server = new Server({onMessage: function(event){
+                    try {
+                        //console.log(event.data);
+                        dispatch(JSON.parse(event.data));
+                    } catch (e) {
+                        console.log("JSON could not be parsed:"+event.data);
+                    }
+                }});
+                
             });
+            function dispatch(msgs)
+            {
+                for (var i in msgs){
+                    var msg = msgs[i];
+                    switch (msg.msgFor)
+                    {
+                        case "irSensors":
+                        case "wheels":
+                            t.msgRx(msg);
+                            break;
+                        default:
+                            console.log("Not recognised msgFor type: "+msg.msgFor);
+                            break;
+                    }
+                }
+            }
+            
         </script>
         <style>
         </style>
     </head>
     <body>
-
-        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
-             xmlns:xlink="http://www.w3.org/1999/xlink" 
-             viewBox="0 0 10 10">
-                <path 
-                      id="arrow"
-                      d="M4.35,0l-3.725,-3.7249999046325684c-0.625,-0.625,-1.875,
-                      0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,
-                      1.25l3.7249999046325684,-3.7249999046325684ZM0.625,0l-3.7249999046325684,
-                      -3.7249999046325684c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,
-                      2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.7249999046325684,-3.7249999046325684Z" 
-                      transform="translate(5, 5) rotate(90, 0, 0)" />
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
-             xmlns:xlink="http://www.w3.org/1999/xlink" 
-             viewBox="0 0 10 10">
-            <defs>
-                <path 
-                      id="arrow"
-                      d="M4.35,0l-3.725,-3.7249999046325684c-0.625,-0.625,-1.875,
-                      0.625,-1.25,1.25l2.5,2.5l-2.5,2.5c-0.625,0.625,0.625,1.875,1.25,
-                      1.25l3.7249999046325684,-3.7249999046325684ZM0.625,0l-3.7249999046325684,
-                      -3.7249999046325684c-0.625,-0.625,-1.875,0.625,-1.25,1.25l2.5,2.5l-2.5,
-                      2.5c-0.625,0.625,0.625,1.875,1.25,1.25l3.7249999046325684,-3.7249999046325684Z" 
-                      transform="translate(5, 5) rotate(90, 0, 0)" />
-            </defs>
-            <use xlink:href="#arrow" stroke-width="0" fill="#afa" stroke="#181" >
-                <animate id="a1" attributeType="XML" attributeName="stroke-width" 
-                        from="0.0" to="0.4" begin="0;a2.end" dur="0.3s"/>
-                <animate id="a2" attributeType="XML" attributeName="stroke-width" 
-                        from="0.4" to="0.0"  begin="a1.end" dur="0.3s"/>
-            </use>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" 
-             xmlns:xlink="http://www.w3.org/1999/xlink" 
-             viewBox="0 0 10 10">
-            <use xlink:href="#arrow" stroke-width="0.2" fill="#eee" stroke="#bbb" transform="rotate(180, 5, 5)"/>
-        </svg>
+        <div class="turtle" style="width: 300px; height: 350px"></div>
+        <div class="joystick" style="width: 350px; height: 350px"></div>
 
     </body>
 </html>

@@ -8,7 +8,8 @@ var Arrow = function (conf){
         pos: {edge: 'bottom', proportion:0.25},
         side: 'left',
         direction: 'up',
-        active: false
+        active: false,
+        onCommand: function(active){}
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
@@ -23,7 +24,7 @@ var Arrow = function (conf){
 
 Arrow.prototype.draw = function()
 {
-    
+    var that = this;
     $(this.conf.containerSelector).append( // "div.turtle"
               '<div class="double-arrow '+this.classSelector+' ">'
             + '</div>'
@@ -43,7 +44,10 @@ Arrow.prototype.draw = function()
             height: sizePx+"px",
         }});
     var svg = $(this.selector).svg("get");
-
+    $(this.selector);
+    $(this.selector)
+            .on("mouseup",  function(){  that.conf.onCommand(false); })
+            .on("mousedown", function(){ that.conf.onCommand(true); });
     var obj = svg.path(arrowPathStr, {
         transform: "translate(5, 5) rotate("+((this.conf.direction==="down")?90:270)+", 0, 0)",
         strokeWidth: 0,

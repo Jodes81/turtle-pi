@@ -1,7 +1,11 @@
 server = {
-    
-    start: function(conf){
-        this.conf = conf;
+    send: function(message)
+    {
+        return this.wsConns.send(message);
+    },
+    start: function(port, onMessage){
+        this.port = port;
+        this.msgHandler = onMessage;
         this.load();
         this.confPaths();
         
@@ -17,16 +21,13 @@ server = {
         this.wss.on('connection', function connection(ws) {
             server.wsConns.push(ws);
 
-            ws.on('message', function (message) {
-                console.log('received: %s', message);
-                ws.send('Hello back!');
-            });
+            ws.on('message', server.msgHandler);
             ws.on('error', function (error) {
                 console.log('cws error: %s', error);
             });
 
-            console.log("New web socket connection made");
-            ws.send('Hello Apollo, we hear you');
+//            console.log("New web socket connection made");
+//            ws.send('Hello Apollo, we hear you');
         });
     },
     load: function(){
@@ -52,6 +53,8 @@ server = {
         this.app.use('/', this.express.static('public'));
         // make all files in ./public/js ACCESSIBLE in [webroot]/js
         this.app.use('/js', this.express.static('public/js'));
+        // make all files in ./public/lib ACCESSIBLE in [webroot]/lib
+        this.app.use('/lib', this.express.static('public/lib'));
         // make all files in ./public/css ACCESSIBLE in [webroot]/css
         this.app.use('/css', this.express.static('public/css'));
         // make all files in /root/lib/blockly ACCESSIBLE in [webroot]/blockly
@@ -66,8 +69,8 @@ server = {
         },
         send: function(message){
             this.removeClosed();
-            console.log("Sending message to "+this.length()+" connections");
-            console.log(message);
+//            console.log("Sending message to "+this.length()+" connections");
+//            console.log(message);
             for (var i in this.conns){
                 var conn = this.conns[i];
                 if (

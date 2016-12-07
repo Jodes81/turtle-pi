@@ -10,19 +10,31 @@ var Wheel = function(conf)
         wheelPos: 0.5,
         borderSize: 0.01,
         arrowSize: 0.25,
-        arrowGap: 0.03
+        arrowGap: 0.03,
+        direction: Wheel.STOP,
+        onCommand: function(direction){}
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
     
     this.selector = this.conf.containerSelector+" .wheel-"+this.conf.side;
+    this.direction = this.conf.direction;
     
     this.arrows = [];
     this.draw();
 };
-
+Wheel.STOP = "STOP";
+Wheel.FORWARD = "FORWARD";
+Wheel.REVERSE = "REVERSE";
+Wheel.prototype.setDirection = function(direction)
+{
+    this.direction = direction;
+    this.arrows["t"].setActive(this.direction === Wheel.FORWARD);
+    this.arrows["b"].setActive(this.direction === Wheel.REVERSE);
+};
 Wheel.prototype.draw = function()
 {
+    var that = this;
     $(this.conf.containerSelector).append( // "div.turtle"
               '<div class="wheel wheel-'+this.conf.side+' ">' // ".wheel-left"
             + '</div>'
@@ -49,7 +61,9 @@ Wheel.prototype.draw = function()
         pos: {edge: 'bottom', proportion: (1-this.conf.wheelPos) + this.conf.height / 2 + this.conf.arrowGap},
         side: this.conf.side,
         direction: "up",
-        active: true
+        onCommand: function(active){
+            that.conf.onCommand( active ? Wheel.FORWARD : Wheel.STOP );
+        }
     });
     this.arrows["b"] = new Arrow({
         scale: this.conf.scale,
@@ -58,11 +72,32 @@ Wheel.prototype.draw = function()
         pos: {edge: 'top', proportion: this.conf.wheelPos + this.conf.height / 2 + this.conf.arrowGap},
         side: this.conf.side,
         direction: "down",
-        active: false
+        onCommand: function(active){
+            that.conf.onCommand( active ? Wheel.REVERSE : Wheel.STOP );
+        }
     });
+    this.setDirection(this.direction);
 };
 
-Wheel.prototype.setDirection = function()
+Wheel.prototype.setDirection = function(direction)
 {
-    
+    this.direction = direction;
+    switch(this.direction)
+    {
+        case Wheel.STOP:
+            this.arrows["t"].setActive(false);
+            this.arrows["b"].setActive(false);
+            break;
+        case Wheel.FORWARD:
+            this.arrows["t"].setActive(true);
+            this.arrows["b"].setActive(false);
+            break;
+        case Wheel.REVERSE:
+            this.arrows["t"].setActive(false);
+            this.arrows["b"].setActive(true);
+            break;
+        default:
+            console.log("Unknown direction: "+ this.direction)
+            break;
+    }
 };

@@ -1,4 +1,6 @@
 
+/* global Wheel */
+
 var Turtle = function(conf)
 {
     this.defConf = {
@@ -8,7 +10,8 @@ var Turtle = function(conf)
         wheelHeight: 0.25,
         wheelWidth: 0.13,
         wheelPos: 0.55,
-        wheelArrowSize: 0.2
+        wheelArrowSize: 0.2,
+        onCommand: function(wheel, direction){}
     };
     this.conf = this.defConf; 
     update(this.conf, conf); // selector, width, height
@@ -17,12 +20,32 @@ var Turtle = function(conf)
     this.width = $(this.conf.selector).width();
     this.height = $(this.conf.selector).height();
     
+    this.sensors = [];
     this.wheels = [];
     this.draw();
 };
-
+Turtle.prototype.msgRx = function(msg)
+{
+    switch (msg.msgFor)
+    {
+        case "irSensors":
+            this.sensors[msg.name].setActive(msg.value);
+//            console.log("Changing LED! " + msg.name + " to " + msg.value);
+            break;
+        case "wheels":
+            this.wheels[msg.name].setDirection(msg.value);
+//            console.log("Changing Wheel Direction! " + msg.name + " to " + msg.value);
+            break;
+        default:
+            console.log("Not recognised msgFor type: "+msg.msgFor);
+            break;
+    }
+    
+};
 Turtle.prototype.draw = function()
 {
+    var that = this;
+    
     $(this.conf.selector).html('<div class="body"></div>');
     
     this.scale = [this.width, this.height];
@@ -48,17 +71,38 @@ Turtle.prototype.draw = function()
         width: this.conf.wheelWidth,
         height: this.conf.wheelHeight,
         wheelPos: this.conf.wheelPos,
-        arrowSize: this.conf.wheelArrowSize
+        arrowSize: this.conf.wheelArrowSize,
+        direction: Wheel.STOP
     };
     var wheelConfLeft = {
         side: "left",
+        onCommand: function(direction){
+            that.conf.onCommand("left", direction);
+        }
     };
     var wheelConfRight = {
         side: "right",
+        onCommand: function(direction){
+            that.conf.onCommand("right", direction);
+        }
     };
     this.wheels['left'] =  new Wheel(update(wheelConfLeft,  wheelConf));
     this.wheels['right'] = new Wheel(update(wheelConfRight, wheelConf));
     
-    
+    var sensorConf = 
+    {
+        scale: this.scale,
+        containerSelector: this.conf.selector, // "div.turtle"
+        size: 0.1,
+        top: 0.02,
+    };
+    var sensorConfLeft = {
+        left: 0.3,
+    };
+    var sensorConfRight = {
+        right: 0.3,
+    };
+    this.sensors['left'] =  new LED(update(sensorConfLeft,  sensorConf));
+    this.sensors['right'] =  new LED(update(sensorConfRight,  sensorConf));
     
 };
