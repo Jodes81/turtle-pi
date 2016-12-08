@@ -1,8 +1,24 @@
 
+
 .joystick {
     display: inline-block;
 }
 .joystick:hover {
-    filter: drop-shadow( 0px 0px 5px #f00 );
+    -filter: drop-shadow( 0px 0px 5px #f00 );
 }
 
+.segment  {
+    stroke-width: 1;
+    stroke: #bbb;
+    fill: #eee;
+}
+.segment-active {
+    stroke-width: 2;
+    stroke: #181;
+    fill: #afa;
+}
+.segment-hover {
+    stroke-width: 3;
+    stroke: #f00;
+    fill: #eee;
+}

@@ -30,7 +30,12 @@
             var t, j, server;
             $(function(){
                 
-                j = new Joystick({selector: "div.joystick"});
+                j = new Joystick({
+                    selector: "div.joystick",
+                    onChange: function(newState){
+                        console.log("State: "+newState);
+                    }
+                });
                 t = new Turtle({
                     selector: "div.turtle",
                     onCommand: function(wheel, direction){
@@ -68,14 +73,13 @@
                     }
                 }
             }
-            
         </script>
         <style>
         </style>
     </head>
     <body>
+        <div id="debug"></div>
         <div class="turtle" style="width: 300px; height: 350px"></div>
         <div class="joystick" style="width: 350px; height: 350px"></div>
-
     </body>
 </html>

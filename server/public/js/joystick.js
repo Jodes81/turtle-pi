@@ -2,108 +2,160 @@ var Joystick = function(conf)
 {
     this.defConf = {
         selector: 'div.joystick',
+        onChange: function(newState){}
     };
     this.conf = this.defConf; 
     update(this.conf, conf); // selector, width, height
     
     this.width = $(this.conf.selector).width();
     this.height = $(this.conf.selector).height();
+    
+    this.donut = new Donut([100,100], 8, 95, 20, 0.1);
+    this.pieces = this.donut.split();
+    this.hole;
+    
     this.draw();
+    this.hoverActive = false;
+    this.activeElement = null;
+};
+Joystick.prototype.getState = function()
+{
+    if (this.activeElement === null) return 0;
+    return this.activeElement.data("segment");
 };
 Joystick.prototype.draw = function()
 {
-
-    var donut = new Donut([100,100], 8, 95, 20, 0.1);
-    var hole;
-    var pieces = donut.split();
-    $("path").attr("draggable", false);
-    $(this.conf.selector).svg({settings: {
-            viewBox: "0 0 200 200",
-            width: $(this.conf.selector).width()+"px",
-            height: $(this.conf.selector).height()+"px",
-    }, onLoad: function(svg){
-        var i = 0;
-        for (; i < pieces.length; i++){
-            
-            var p = svg.path(pieces[i].pathStr(), {
-                    fill: "#eee",
-                    strokeWidth: "1",
-                    stroke: "#bbb",
-                    class: "segment_"+i,
-                    draggable: false
-            });
-            pieces[i].svg = p;
-            pieces[i].selector = ".segment_"+i;
-            
-            
-            var down = false;
-            $(document).mousedown(function() {
-                down = true;
-            }).mouseup(function() {
-                down = false;  
-            });
-            
-            function applyDown(idx){
-//                console.log("on", idx);
-                $(pieces[idx].selector)
-                        .attr("stroke-width", "2")
-                        .attr("stroke", "#181")
-                        .attr("fill", "#afa");
-            }
-            function applyHover(idx){
-                if(down) {
-                    applyDown(idx);
-                } else {
-//                    console.log("off", idx);
-                    $(pieces[idx].selector)
-                            .attr("stroke-width", "3")
-                            .attr("stroke", "#f00");
-                }
-            }
-            function applyOut(idx){
-//                console.log("off", idx);
-                $(pieces[idx].selector)
-                        .attr("stroke-width", "1")
-                        .attr("stroke", "#bbb")
-                        .attr("fill", "#eee");
-            }
-            function applyUp(idx){
-//                console.log("off", idx);
-                $(pieces[idx].selector)
-                        .attr("stroke-width", "1")
-                        .attr("stroke", "#bbb")
-                        .attr("fill", "#eee");
-            }
-            function doDown(idx){
-                return function(){
-                    applyDown(idx);
-                    down = true; // ensure "down" follows mouse as it moves over other segments
-                    return false; // prevent dragging ghost
-                };
-            }
-            function go(idx, fn){
-                return function(){
-                    fn(idx);
-                }
-            }
-            $(".segment_"+i).hover(go(i, applyHover));
-            $(".segment_"+i).on("mousedown", doDown(i));
-            $(".segment_"+i).on("mouseout", go(i, applyOut));
-            $(".segment_"+i).on("mouseup", go(i, applyUp));
+    var that = this;
+    function doInactive(){
+        if (that.activeElement !== null){
+            that.activeElement.removeClass("segment-active");
+            that.activeElement = null;
+            that.conf.onChange(that.getState());
         }
-        hole = svg.circle(100, 100, donut.inner * 0.75, {
-            fill: '#ff0',
-            class: "joystick-hole"
-        });
-        $(".joystick-hole").on("mousedown", function(){
-//            $(this).css("cursor", "none");
-        });
-        $(".joystick-hole").on("mouseup", function(){
-//            $(this).css("cursor");
-        });
-    }});
-    
+    }
+    function doActive(point){
+        var e = document.elementFromPoint(point.x, point.y);
+        var jq = $(e).filter(".segment");
+        if (jq.length) // if hovering over a segment
+        {
+            // if the segment is already active
+            if ( that.activeElement == null || jq[0] != that.activeElement[0] )
+            {
+                doInactive();
+                that.activeElement = jq;
+                jq.addClass("segment-active");
+                that.conf.onChange(that.getState());
+            }
+        }
+    }
+    function xyFromEvent(event){
+        if (typeof event.pageX !== "undefined"){
+            return {
+                x: event.pageX,
+                y: event.pageY
+            };
+        } else {
+            return {
+                x: event.originalEvent.touches[0].pageX,
+                y: event.originalEvent.touches[0].pageY
+            };
+        }
+    }
+    $(this.conf.selector).svg({
+        settings: {
+            viewBox: "0 0 200 200",
+            width: this.width+"px",
+            height: this.height+"px",
+        }, 
+        onLoad: function(svg){
+            for (var i in that.pieces){
+                that.pieces[i].draw(svg, parseInt(i)+1);
+            }
+            that.hole = svg.circle(100, 100, that.donut.inner * 0.75, {
+                fill: '#ff0',
+                class: "joystick-hole"
+            });
+            $(".joystick-hole").on("mousedown", function(){    /*$(this).css("cursor", "none");*/ });
+            $(".joystick-hole").on("mouseup", function(){    /*$(this).css("cursor");*/ });
+            
+            $(this).on("mousedown touchstart", function(event)
+            {
+                that.hoverActive = true;
+                //doInactive();
+                doActive(xyFromEvent(event));
+                return false;
+            });
+            $(this).on("mousemove touchmove", function(event)
+            {
+                if (that.hoverActive){
+                    //doInactive();
+                    doActive(xyFromEvent(event));
+                }
+                return false;
+            });
+            $(this).on("mouseup mouseleave touchend", function(event)
+            {
+                that.hoverActive = false;
+                doInactive();
+                return false;
+            });
+
+        }
+    });
 };
+
+
+var Piece = function(donut, thetaStart, thetaEnd)
+{
+    this.donut = donut; 
+    this.thetaStart = thetaStart; 
+    this.thetaEnd =   thetaEnd; 
+};
+Piece.prototype.draw = function(svg, i){
+    this.svgPath = svg.path(this.pathStr(), {
+            class: "segment segment_"+i,
+            draggable: false
+    });
+    $(this.svgPath).data("segment", i);
+//    this.selector = ".segment_"+i;
+};
+Piece.prototype.pathStr = function()
+{
+    this.outerStart = [
+        100 + Piece.opposite(this.thetaStart, this.donut.outer),
+        100 - Piece.adjacent(this.thetaStart, this.donut.outer)
+    ];
+    this.outerEnd = [
+        100 + Piece.opposite(this.thetaEnd, this.donut.outer),
+        100 - Piece.adjacent(this.thetaEnd, this.donut.outer)
+    ];
+    this.innerStart = [
+        100 + Piece.opposite(this.thetaEnd, this.donut.inner),
+        100 - Piece.adjacent(this.thetaEnd, this.donut.inner)
+    ];
+    this.innerEnd = [
+        100 + Piece.opposite(this.thetaStart, this.donut.inner),
+        100 - Piece.adjacent(this.thetaStart, this.donut.inner)
+    ];
+    
+    var p = "";
+    p += Piece.pp("M", this.outerStart);
+    p += Piece.svgArc(this.donut.outer, this.outerEnd, true);
+    p += Piece.pp("L", this.innerStart);
+    p += Piece.svgArc(this.donut.inner, this.innerEnd, false);
+    p += Piece.pp("L", this.outerStart);
+    p += " z "
+    return p;
+};
+Piece.opposite = function(theta, hyp){    return Math.sin(theta) * hyp;   };
+Piece.adjacent = function(theta, hyp){    return Math.cos(theta) * hyp;   };
+Piece.svgArc = function(radius, end, bulgeLeft){
+    return  Piece.pp("A", [radius, radius]) +
+            " 0, 0, " + (bulgeLeft?1:0) + " " +
+            Piece.pp("", end);
+};
+Piece.pp = function(prefix, pair){ return " "+prefix+" "+pair[0]+","+pair[1]+" "; };
+
 
 var Donut = function(centre, divs, outer, inner, gap){
     this.centre = centre;
@@ -129,47 +181,3 @@ Donut.prototype.split = function()
     return pieces;
 };
 Donut.prototype.getNetDivTheta = function(){        return ((Math.PI * 2) / this.divs) - this.gap;  };
-
-var Piece = function(donut, thetaStart, thetaEnd)
-{
-    this.donut = donut; 
-    this.thetaStart = thetaStart; 
-    this.thetaEnd =   thetaEnd; 
-    this.outerStart = [
-        100 + opposite(this.thetaStart, this.donut.outer),
-        100 - adjacent(this.thetaStart, this.donut.outer)
-    ];
-    this.outerEnd = [
-        100 + opposite(this.thetaEnd, this.donut.outer),
-        100 - adjacent(this.thetaEnd, this.donut.outer)
-    ];
-    this.innerStart = [
-        100 + opposite(this.thetaEnd, this.donut.inner),
-        100 - adjacent(this.thetaEnd, this.donut.inner)
-    ];
-    this.innerEnd = [
-        100 + opposite(this.thetaStart, this.donut.inner),
-        100 - adjacent(this.thetaStart, this.donut.inner)
-    ];
-};
-
-var opposite = function(theta, hyp){    return Math.sin(theta) * hyp;   };
-var adjacent = function(theta, hyp){    return Math.cos(theta) * hyp;   };
-function arc(radius, end, bulgeLeft){
-    return  pp("A", [radius, radius]) +
-            " 0, 0, " + (bulgeLeft?1:0) + " " +
-            pp("", end);
-}
-function pp(prefix, pair){ return " "+prefix+" "+pair[0]+","+pair[1]+" "; }
-
-Piece.prototype.pathStr = function()
-{
-    var p = "";
-    p += pp("M", this.outerStart);
-    p += arc(this.donut.outer, this.outerEnd, true);
-    p += pp("L", this.innerStart);
-    p += arc(this.donut.inner, this.innerEnd, false);
-    p += pp("L", this.outerStart);
-    p += " z "
-    return p;
-};

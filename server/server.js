@@ -12,7 +12,7 @@ server = {
         this.http.on('request', this.app);
 
         this.http.listen(
-                this.conf.port, 
+                this.port, 
                 function () { 
                     console.log('Listening on ' + server.http.address().port)
                 }
