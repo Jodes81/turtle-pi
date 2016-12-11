@@ -1,5 +1,5 @@
 
-var Server = function(conf)
+var ServerConn = function(conf)
 {
     this.defConf = {
         onMessage: function(event){}
@@ -10,7 +10,7 @@ var Server = function(conf)
     this.ws;
     this.setup();
 };
-Server.prototype.setup = function()
+ServerConn.prototype.setup = function()
 {
     var that = this;
     this.ws = new WebSocket('ws://'+document.location.hostname+':'+document.location.port+'/bla');
@@ -18,7 +18,7 @@ Server.prototype.setup = function()
         that.conf.onMessage(event);
     };
 };
-Server.prototype.send = function(msg)
+ServerConn.prototype.send = function(msg)
 {
     this.ws.send(msg);
 };

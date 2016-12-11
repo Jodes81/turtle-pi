@@ -3,9 +3,10 @@ server = {
     {
         return this.wsConns.send(message);
     },
-    start: function(port, onMessage){
+    start: function(port, onMessage, onConnection){
         this.port = port;
-        this.msgHandler = onMessage;
+        this.onMessage = onMessage;
+        this.onConnection = onConnection;
         this.load();
         this.confPaths();
         
@@ -21,11 +22,12 @@ server = {
         this.wss.on('connection', function connection(ws) {
             server.wsConns.push(ws);
 
-            ws.on('message', server.msgHandler);
+            ws.on('message', server.onMessage);
             ws.on('error', function (error) {
                 console.log('cws error: %s', error);
             });
 
+            server.onConnection(ws);
 //            console.log("New web socket connection made");
 //            ws.send('Hello Apollo, we hear you');
         });

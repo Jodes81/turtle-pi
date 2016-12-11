@@ -4,6 +4,7 @@
         <title>Turtle Direct Control</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/material-icons.css" />
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="css/led.css" />
         <link rel="stylesheet" href="css/turtle.css" />
@@ -24,22 +25,22 @@
         <script src="js/arrow.js"></script>
         <script src="js/led.js"></script>
         <script src="js/joystick.js"></script>
-        <script src="js/server.js"></script>
+        <script src="js/serverconn.js"></script>
         
         <script>
-            var t, j, server;
+            var turtle, joystick, serverConn;
             $(function(){
                 
-                j = new Joystick({
+                joystick = new Joystick({
                     selector: "div.joystick",
                     onChange: function(newState){
-                        console.log("State: "+newState);
+//                        console.log("State: "+newState);
                     }
                 });
-                t = new Turtle({
+                turtle = new Turtle({
                     selector: "div.turtle",
                     onCommand: function(wheel, direction){
-                        server.send(JSON.stringify({
+                        serverConn.send(JSON.stringify({
                             msgFor: "wheel",
                             name: wheel,
                             value: direction
@@ -47,25 +48,66 @@
                     }
                 });
                 
-                server = new Server({onMessage: function(event){
-                    try {
-                        //console.log(event.data);
-                        dispatch(JSON.parse(event.data));
-                    } catch (e) {
-                        console.log("JSON could not be parsed:"+event.data);
+                serverConn = new ServerConn({
+                    onMessage: function(event){
+                        try {
+                            routeMsg(JSON.parse(event.data));
+                        } catch (e) {
+                            console.log("JSON could not be parsed:"+event.data);
+                        }
                     }
-                }});
+                });
                 
+                $('.RunEval').on("click", function()
+                {
+                    serverConn.send(JSON.stringify({
+                        msgFor: "guiCommandButton",
+                        name: "RunEval",
+                        value: ""
+                    }));
+                });
+                $('.RunVM2').on("click", function()
+                {
+                    serverConn.send(JSON.stringify({
+                        msgFor: "guiCommandButton",
+                        name: "RunVM2",
+                        value: ""
+                    }));
+                });
+                $('.StopVM2').on("click", function()
+                {
+                    serverConn.send(JSON.stringify({
+                        msgFor: "guiCommandButton",
+                        name: "StopVM2",
+                        value: ""
+                    }));
+                });
+                $('.ResetVM2Fiber').on("click", function()
+                {
+                    serverConn.send(JSON.stringify({
+                        msgFor: "guiCommandButton",
+                        name: "ResetVM2Fiber",
+                        value: ""
+                    }));
+                });
+                $('.RunJSInterpreter').on("click", function()
+                {
+                    serverConn.send(JSON.stringify({
+                        msgFor: "guiCommandButton",
+                        name: "RunJSInterpreter",
+                        value: ""
+                    }));
+                });
             });
-            function dispatch(msgs)
+            function routeMsg(msgs)
             {
                 for (var i in msgs){
                     var msg = msgs[i];
                     switch (msg.msgFor)
                     {
-                        case "irSensors":
-                        case "wheels":
-                            t.msgRx(msg);
+                        case "irSensor":
+                        case "wheel":
+                            turtle.msgRx(msg);
                             break;
                         default:
                             console.log("Not recognised msgFor type: "+msg.msgFor);
@@ -81,5 +123,14 @@
         <div id="debug"></div>
         <div class="turtle" style="width: 300px; height: 350px"></div>
         <div class="joystick" style="width: 350px; height: 350px"></div>
+        <br/>
+        <button class="ui-btn ui-corner-all ui-btn-inline command-run RunEval">Run Eval</button>
+        <br/>
+        <button class="ui-btn ui-corner-all ui-btn-inline command-run RunVM2">Run VM</button>
+        <button class="ui-btn ui-corner-all ui-btn-inline command-run StopVM2">Stop VM</button>
+        <button class="ui-btn ui-corner-all ui-btn-inline command-run ResetVM2Fiber">ResetFiber</button>
+        <br/>
+        <button class="ui-btn ui-corner-all ui-btn-inline command-run RunJSInterpreter">RunJSInterpreter</button>
+        <a href="#" class="material-icons">settings</a>
     </body>
 </html>

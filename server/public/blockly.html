@@ -5,11 +5,17 @@
   <title>Blockly Demo: Resizable Blockly (Part 2)</title>
   <script src="blockly/blockly_compressed.js"></script>
   <script src="blockly/blocks_compressed.js"></script>
+  <script src="blockly/javascript_compressed.js"></script>
   <script src="blockly/msg/js/en.js"></script>
+  <script src="js/blockly/blocks.js"></script>
+  <script src="js/blockly/gens.js"></script>
+  
+  <script src="lib/jquery.js"></script>
+  
   <link rel="stylesheet" type="text/css" href="css/main.css">
 </head>
 <body>
-  <table>
+  <table class="blockly">
     <tr>
       <td id="blocklyArea">
       </td>
@@ -18,17 +24,62 @@
 
   <div id="blocklyDiv" style="position: absolute"></div>
 
-  <xml id="toolbox" style="display: none">
-    <block type="controls_if"></block>
-    <block type="logic_compare"></block>
-    <block type="controls_repeat_ext"></block>
-    <block type="math_number"></block>
-    <block type="math_arithmetic"></block>
-    <block type="text"></block>
-    <block type="text_print"></block>
-  </xml>
+    <xml id="toolbox" style="display: none">
+        <category name="Stuff" colour="#5CA65C">
+            <block type="controls_if"></block>
+            <block type="logic_compare"></block>
+            <block type="controls_repeat_ext"></block>
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
+            <block type="text"></block>
+            <block type="text_print"></block>
+        </category>
+        <category name="Time" colour="#995599">
+            <block type="time_sleep_input"></block>
+            <block type="time_sleep_field"></block>
+        </category>
+        <category name="Output" colour="#995555">
+            <block type="output_green_led_field"></block>
+        </category>
+    </xml>
 
-  <script src="js/blockly.js"></script>
+<xml id="startBlocks" style="display: none">
+    <block type="controls_repeat_ext" id="@S6F/1f#@S7~|NL.Jj`q" x="178" y="85">
+        <value name="TIMES">
+            <block type="math_number" id="!hntQ#%JZ~qutBwg75mT">
+                <field name="NUM">3</field>
+            </block>
+        </value>
+        <statement name="DO">
+            <block type="output_green_led_field" id="9v6ZfCpO!$v`ravI*te/">
+                <field name="on">TRUE</field>
+                <next>
+                    <block type="time_sleep_field" id="+ci)^xM=g7Sj;eg!;bK3">
+                        <field name="sleepval">0.5</field>
+                        <next>
+                            <block type="output_green_led_field" id="G8uWY#];%XebYd{(v=y?">
+                                <field name="on">FALSE</field>
+                                <next>
+                                    <block type="time_sleep_field" id="ZgAW$qAko/T:Fy|m1Y/q">
+                                        <field name="sleepval">0.5</field>
+                                    </block>
+                                </next>
+                            </block>
+                        </next>
+                    </block>
+                </next>
+            </block>
+        </statement>
+    </block>
+</xml>
+
+<button id="showjs">Show JS</button>
+<button id="highlight">Highlight Block</button>
+<button id="showxml">Show XML</button>
+<textarea id="xml"></textarea>
+
+  <script src="js/blockly/blockly.js"></script>
+  
 
 </body>
 </html>

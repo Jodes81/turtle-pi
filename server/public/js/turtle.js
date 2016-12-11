@@ -28,11 +28,11 @@ Turtle.prototype.msgRx = function(msg)
 {
     switch (msg.msgFor)
     {
-        case "irSensors":
+        case "irSensor":
             this.sensors[msg.name].setActive(msg.value);
 //            console.log("Changing LED! " + msg.name + " to " + msg.value);
             break;
-        case "wheels":
+        case "wheel":
             this.wheels[msg.name].setDirection(msg.value);
 //            console.log("Changing Wheel Direction! " + msg.name + " to " + msg.value);
             break;
