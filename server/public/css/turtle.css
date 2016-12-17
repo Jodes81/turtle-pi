@@ -10,7 +10,7 @@
 }
 
 .turtle .wheel {
-    border-radius: 9px;
+    border-radius: 15%;
     background-color: #f8f844;
     position: absolute;
 }

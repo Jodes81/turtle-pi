@@ -6,7 +6,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/material-icons.css" />
         <link rel="stylesheet" href="css/main.css" />
-        <link rel="stylesheet" href="css/led.css" />
         <link rel="stylesheet" href="css/turtle.css" />
         <link rel="stylesheet" href="css/joystick.css" />
 
@@ -18,111 +17,47 @@
         <script src="lib/jquery.svg.min.js"></script>
         <script src="lib/jquery.svganim.min.js"></script>
         <script src="lib/jquery.svgdom.min.js"></script>
-        
+
+        <link rel="stylesheet" href="css/jquery-ui.min.css"/>
+        <link rel="stylesheet" href="css/jquery-ui.structure.min.css"/>
+        <link rel="stylesheet" href="css/jquery-ui.theme.min.css"/>
+        <script src="lib/jquery-ui.min.js"></script>
+
         <script src="js/utils.js"></script>
+        <script src="js/main.js"></script>
         <script src="js/turtle.js"></script>
         <script src="js/wheel.js"></script>
         <script src="js/arrow.js"></script>
         <script src="js/led.js"></script>
         <script src="js/joystick.js"></script>
+        <script src="js/cmdeditor.js"></script>
+        <script src="js/cmdbutton.js"></script>
+        <script src="js/cmdbuttman.js"></script>
         <script src="js/serverconn.js"></script>
         
         <script>
-            var turtle, joystick, serverConn;
-            $(function(){
-                
-                joystick = new Joystick({
-                    selector: "div.joystick",
-                    onChange: function(newState){
-//                        console.log("State: "+newState);
-                    }
-                });
-                turtle = new Turtle({
-                    selector: "div.turtle",
-                    onCommand: function(wheel, direction){
-                        serverConn.send(JSON.stringify({
-                            msgFor: "wheel",
-                            name: wheel,
-                            value: direction
-                        }));
-                    }
-                });
-                
-                serverConn = new ServerConn({
-                    onMessage: function(event){
-                        try {
-                            routeMsg(JSON.parse(event.data));
-                        } catch (e) {
-                            console.log("JSON could not be parsed:"+event.data);
-                        }
-                    }
-                });
-                
-                $('.RunEval').on("click", function()
-                {
-                    serverConn.send(JSON.stringify({
-                        msgFor: "guiCommandButton",
-                        name: "RunEval",
-                        value: ""
-                    }));
-                });
-                $('.RunVM2').on("click", function()
-                {
-                    serverConn.send(JSON.stringify({
-                        msgFor: "guiCommandButton",
-                        name: "RunVM2",
-                        value: ""
-                    }));
-                });
-                $('.StopVM2').on("click", function()
-                {
-                    serverConn.send(JSON.stringify({
-                        msgFor: "guiCommandButton",
-                        name: "StopVM2",
-                        value: ""
-                    }));
-                });
-                $('.ResetVM2Fiber').on("click", function()
-                {
-                    serverConn.send(JSON.stringify({
-                        msgFor: "guiCommandButton",
-                        name: "ResetVM2Fiber",
-                        value: ""
-                    }));
-                });
-                $('.RunJSInterpreter').on("click", function()
-                {
-                    serverConn.send(JSON.stringify({
-                        msgFor: "guiCommandButton",
-                        name: "RunJSInterpreter",
-                        value: ""
-                    }));
-                });
-            });
-            function routeMsg(msgs)
-            {
-                for (var i in msgs){
-                    var msg = msgs[i];
-                    switch (msg.msgFor)
-                    {
-                        case "irSensor":
-                        case "wheel":
-                            turtle.msgRx(msg);
-                            break;
-                        default:
-                            console.log("Not recognised msgFor type: "+msg.msgFor);
-                            break;
-                    }
-                }
-            }
         </script>
         <style>
         </style>
     </head>
-    <body>
+    <body data-role="page">
         <div id="debug"></div>
-        <div class="turtle" style="width: 300px; height: 350px"></div>
+        <div class="turtle turtle_large" style="width: 300px; height: 350px"></div>
         <div class="joystick" style="width: 350px; height: 350px"></div>
+        <div class="blockly dialog-cont " style="background-color: white">
+            <div class="" style="vertical-align: bottom;">
+                <div class="turtle" style="width: 60px; height: 60px; "></div>
+                <span class="material-icons icon-button-play icon-button icon-button-disabled">play_arrow</span>
+                <span class="material-icons icon-button-stop icon-button">stop</span>
+                <input class="name"  value="No Name!"/>
+            </div>                
+        </div>
+        <div class="cmd-button-utils-container">
+            <button class="ui-btn ui-corner-all ui-btn-inline add">
+                <span class="material-icons">add</span>
+            </button>
+        </div>
+        <div class="cmd-button-container"></div>
         <br/>
         <button class="ui-btn ui-corner-all ui-btn-inline command-run RunEval">Run Eval</button>
         <br/>
@@ -131,6 +66,11 @@
         <button class="ui-btn ui-corner-all ui-btn-inline command-run ResetVM2Fiber">ResetFiber</button>
         <br/>
         <button class="ui-btn ui-corner-all ui-btn-inline command-run RunJSInterpreter">RunJSInterpreter</button>
-        <a href="#" class="material-icons">settings</a>
+        
+        <span class="material-icons icon-button-delete icon-button">delete_forever</span>
+        <span class="material-icons icon-button-delete icon-button">delete</span>
+        <span class="material-icons icon-button-archive icon-button">folder_open</span>
+        <span class="material-icons icon-button-archive icon-button">unarchive</span>
+        
     </body>
 </html>

@@ -11,6 +11,7 @@ var Turtle = function(conf)
         wheelWidth: 0.13,
         wheelPos: 0.55,
         wheelArrowSize: 0.2,
+        ledSize: 0.1,
         onCommand: function(wheel, direction){}
     };
     this.conf = this.defConf; 
@@ -30,11 +31,9 @@ Turtle.prototype.msgRx = function(msg)
     {
         case "irSensor":
             this.sensors[msg.name].setActive(msg.value);
-//            console.log("Changing LED! " + msg.name + " to " + msg.value);
             break;
         case "wheel":
             this.wheels[msg.name].setDirection(msg.value);
-//            console.log("Changing Wheel Direction! " + msg.name + " to " + msg.value);
             break;
         default:
             console.log("Not recognised msgFor type: "+msg.msgFor);
@@ -93,7 +92,7 @@ Turtle.prototype.draw = function()
     {
         scale: this.scale,
         containerSelector: this.conf.selector, // "div.turtle"
-        size: 0.1,
+        size: this.conf.ledSize,
         top: 0.02,
     };
     var sensorConfLeft = {

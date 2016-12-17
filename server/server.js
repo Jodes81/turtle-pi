@@ -1,12 +1,38 @@
 server = {
+    messageListeners: [],
+    connectionListeners: [],
     send: function(message)
     {
-        return this.wsConns.send(message);
+        return server.wsConns.send(message);
+    },
+    sendMessageSet: function(messages)
+    {
+        return server.send(JSON.stringify(messages));
+    },
+    sendSingleMessage: function(message)
+    {
+//        console.log("Sending ", message);
+        return server.sendMessageSet([message]);
+    },
+    addMessageListener: function(conf){
+        if (typeof server.messageListeners[conf.msgFor] === "undefined") 
+        {
+            server.messageListeners[conf.msgFor] = [];
+        }
+        server.messageListeners[conf.msgFor].push(conf);
+    },
+    addConnectionListener: function(fn){
+        this.connectionListeners.push(fn);
     },
     start: function(port, onMessage, onConnection){
         this.port = port;
         this.onMessage = onMessage;
-        this.onConnection = onConnection;
+        this.onConnection = function(ws){
+            onConnection(server);
+            for (var i in server.connectionListeners){
+                server.connectionListeners[i](server);
+            }
+        };
         this.load();
         this.confPaths();
         
@@ -15,16 +41,59 @@ server = {
         this.http.listen(
                 this.port, 
                 function () { 
-                    console.log('Listening on ' + server.http.address().port)
+                    console.log('Listening on ' + server.http.address().port);
                 }
         );
 
-        this.wss.on('connection', function connection(ws) {
+        this.wss.on('connection', function connection(ws){
             server.wsConns.push(ws);
-
-            ws.on('message', server.onMessage);
+            console.info("New connection");
+            ws.on('message', function(str){
+                server.onMessage(str);
+                try {
+                    var msg = JSON.parse(str);
+                } catch (e) {
+                    console.warn("JSON could not be parsed:"+str);
+                } finally {
+                    if (!Object.keys(server.messageListeners).length){
+                        console.warn ("No listeners. ", str);
+                    } else {
+                        var listeners = server.messageListeners[msg.msgFor];
+                        if (!listeners.length){
+                            console.warn ("No listeners found for " + msg.msgFor);
+                        } else {
+                            for (var i in listeners)
+                            {
+                                listeners[i].onMessage(msg);
+                            }
+                        }
+                    }
+                }
+                    /*
+                try {
+                    var o = JSON.parse(str);
+                    switch(o.msgFor){
+                        case "wheel":
+                            turtle.setWheelDirection(o.name, o.value);
+                            break;
+                        case "guiCommandButton":
+            //                guiCommandButton(o.name, o.value);
+            //                break;
+                        case "cmdButtonManager":
+                        case "cmd":
+                            commands.msgRx(o.msgFor, o.name, o.value);
+                            break;
+                        default:
+                            console.log("Unknown msgFor:" + o.msgFor);
+                            break;
+                    }
+                } catch (e) {
+                    console.log("Problem handling received message: \n", e);
+                }
+                */
+            });
             ws.on('error', function (error) {
-                console.log('cws error: %s', error);
+                console.warn('cws error: %s', error);
             });
 
             server.onConnection(ws);
@@ -80,7 +149,7 @@ server = {
                 ){
                     conn.send(message);
                 } else {
-                    console.log('Could not send message: websocket not open. ('+message+')');
+                    console.warn('Could not send message: websocket not open. ('+message+')');
                 }
             }
         },
@@ -98,7 +167,7 @@ server = {
                 }
             }
             var num = this.conns.length-openConns.length;
-            if (num) console.log("Removed "+num+" closed WebSocket connections")
+            if (num) console.info("Removed "+num+" closed WebSocket connections")
             this.conns = openConns;
         }
     } // websocket connections

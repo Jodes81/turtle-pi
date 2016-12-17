@@ -17,3 +17,59 @@ table.blockly {
   height: 60%;
 }
 
+.icon-button {
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.blockly .turtle, 
+.blockly .ui-input-text,
+.blockly .icon-button {
+    margin: 0px 10px;
+}
+.blockly .ui-input-text {
+    display: inline-block;
+    font-size: 25px;
+    padding-left: 15px;
+}
+.blockly .icon-button {
+    border: 2px solid black;
+    font-size: 60px;
+}
+.blockly .icon-button-disabled {
+    color: #bbb;
+    border-color: #bbb;
+}
+            
+.cmd-button-utils-container span {
+    font-size: 20px;
+}
+
+.cmd-button-container div.cmd-button {
+    -display: inline-block;
+}
+.cmd-button-container div.cmd-button button.main-button span {
+    vertical-align: text-bottom;
+}
+.cmd-button-container div.cmd-button button.main-button span.label {
+    margin-right: 8px;
+}
+.cmd-button-container div.cmd-button button.main-button .icon {
+    margin-left: 6px;
+    font-size: 20px; 
+    border-radius: 50%;
+    
+    border: 2px solid #bbb;
+    color: #bbb;
+} 
+.cmd-button-container div.cmd-button button.main-button .icon-inactive {
+    color: #000;
+    border-color: #000;
+}
+.cmd-button-container div.cmd-button .icon-button {
+    font-size: 30px;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    margin-left: 15px; 
+    margin-right: 15px; 
+}

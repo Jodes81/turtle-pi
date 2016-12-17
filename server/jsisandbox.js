@@ -12,13 +12,14 @@ function green_led(active)
 var Sandbox = function(conf, fns)
 {
     this.stepsRun = 0;
+    this.startTime = null;
     this.stepperTimeout = null;
     this.isRunning = false;
     this.interpreter = null;
     this.nextStepTime = null;
     this.stepTime = null;
     var defConf = {
-        finished: function(steps){ console.log("Finished. Steps="+steps); }
+        finished: function(steps, time){ console.log("Finished. Steps:"+steps+", time:"+time); }
     };
     var defFns = {
         sleep: [this, this.sleep],
@@ -82,6 +83,7 @@ Sandbox.prototype.run = function(code, stepTime)
 {
     if (this.isRunning) this.stop();
     this.stepsRun = 0;
+    this.startTime = new Date().getTime();
     this.isRunning = true;
     this.stepTime = (stepTime == parseInt(stepTime)) ? stepTime : 1;
     this.interpreter.appendCode(code);
@@ -98,7 +100,7 @@ Sandbox.prototype.stepper = function()
         }, this.nextStepTime);
         this.nextStepTime = this.stepTime;
     } else {
-        this.finished(this.stepsRun);
+        this.finished(this.stepsRun, (new Date().getTime() - this.startTime));
         this.isRunning = false;
     }
 };

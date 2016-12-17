@@ -42,7 +42,7 @@ Wheel.prototype.draw = function()
     
     var widthPx =    Math.round(this.conf.width *      this.conf.scale[0]);
     var heightPx =   Math.round(this.conf.height *     this.conf.scale[1]);
-    var borderPx =   Math.round(this.conf.borderSize * this.conf.scale[0]);
+    var borderPx =   Math.ceil(this.conf.borderSize * this.conf.scale[0]);
     var wheelPosPx = Math.round(this.conf.wheelPos *   this.conf.scale[1]);
     var topPx = wheelPosPx - Math.round(heightPx/2) - borderPx;
     $(this.selector)
