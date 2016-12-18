@@ -19,7 +19,6 @@ var Wheel = function(conf)
     
     this.selector = this.conf.containerSelector+" .wheel-"+this.conf.side;
     this.direction = this.conf.direction;
-    
     this.arrows = [];
     this.draw();
 };
@@ -39,7 +38,6 @@ Wheel.prototype.draw = function()
               '<div class="wheel wheel-'+this.conf.side+' ">' // ".wheel-left"
             + '</div>'
     );
-    
     var widthPx =    Math.round(this.conf.width *      this.conf.scale[0]);
     var heightPx =   Math.round(this.conf.height *     this.conf.scale[1]);
     var borderPx =   Math.ceil(this.conf.borderSize * this.conf.scale[0]);

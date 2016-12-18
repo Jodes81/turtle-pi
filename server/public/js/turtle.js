@@ -63,7 +63,6 @@ Turtle.prototype.draw = function()
         .css("bottom",  margin[1]+"px" )
         .css("border", bodyBorderPx+"px solid #777")
     ;
-    
     var wheelConf = {
         scale: this.scale,
         containerSelector: this.conf.selector, // "div.turtle"
@@ -103,5 +102,4 @@ Turtle.prototype.draw = function()
     };
     this.sensors['left'] =  new LED(update(sensorConfLeft,  sensorConf));
     this.sensors['right'] =  new LED(update(sensorConfRight,  sensorConf));
-    
 };

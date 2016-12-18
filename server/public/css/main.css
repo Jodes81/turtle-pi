@@ -22,21 +22,21 @@ table.blockly {
     cursor: pointer;
 }
 
-.blockly .turtle, 
-.blockly .ui-input-text,
-.blockly .icon-button {
+.editor-dialog .turtle, 
+.editor-dialog .ui-input-text,
+.editor-dialog .icon-button {
     margin: 0px 10px;
 }
-.blockly .ui-input-text {
+.editor-dialog .ui-input-text {
     display: inline-block;
     font-size: 25px;
     padding-left: 15px;
 }
-.blockly .icon-button {
+.editor-dialog .icon-button {
     border: 2px solid black;
     font-size: 60px;
 }
-.blockly .icon-button-disabled {
+.editor-dialog .icon-button-disabled {
     color: #bbb;
     border-color: #bbb;
 }

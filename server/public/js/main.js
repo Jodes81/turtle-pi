@@ -1,4 +1,4 @@
-var turtle, joystick, serverConn, cmdButtonManager;
+var turtle_large, joystick, serverConn, cmdButtonManager, cmdEditor;
 
 $(function(){
         doLoad(); 
@@ -37,12 +37,11 @@ function doLoad()
         retryTest();
     });
 
-    var cmdEditor = new CmdEditor({ selector: "div.blockly" });
+    cmdEditor = new CmdEditor({ selector: "div.editor-dialog" });
 
     cmdButtonManager = new CmdButtonManager({
         serverConn: serverConn,
         buttonContainerSelector: ".cmd-button-container",
-//        blocklyDialogSelector: "div.blockly",
         cmdEditor: cmdEditor
     });
     cmdButtonManager.load();
@@ -61,11 +60,10 @@ function doLoad()
             }));
         }
     });
-    turtle_blockly = new Turtle({ selector: ".blockly .turtle", });
 
     function cheekyButton(sel, name){
         $(sel).on("click", function(){
-            serverConn.sendMessage({ msgFor: msgFor, name: "guiCommandButton", value: "" });
+            serverConn.sendMessage({ msgFor: "guiCommandButton", name: name, value: "" });
         });
     }
     cheekyButton('.RunEval', "RunEval");
@@ -83,7 +81,7 @@ function routeMsgs(msgs)
             case "irSensor":
             case "wheel":
                 turtle_large.msgRx(msg);
-                turtle_blockly.msgRx(msg);
+                cmdEditor.turtle.msgRx(msg);
                 break;
             case "cmdButtonManager":
                 //cmdButtonManager.msgRx(msg);

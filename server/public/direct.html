@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="css/main.css" />
         <link rel="stylesheet" href="css/turtle.css" />
         <link rel="stylesheet" href="css/joystick.css" />
+        <link rel="stylesheet" href="css/arrows.css" />
 
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.theme.min.css"/>
         <link rel="stylesheet" href="css/jquery.mobile.custom.complete.structure.min.css"/>
@@ -18,6 +19,11 @@
         <script src="lib/jquery.svganim.min.js"></script>
         <script src="lib/jquery.svgdom.min.js"></script>
 
+        <script src="blockly/blockly_compressed.js"></script>
+        <script src="blockly/blocks_compressed.js"></script>
+        <script src="blockly/javascript_compressed.js"></script>
+        <script src="blockly/msg/js/en.js"></script>
+        
         <link rel="stylesheet" href="css/jquery-ui.min.css"/>
         <link rel="stylesheet" href="css/jquery-ui.structure.min.css"/>
         <link rel="stylesheet" href="css/jquery-ui.theme.min.css"/>
@@ -25,6 +31,7 @@
 
         <script src="js/utils.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/blockly.js"></script>
         <script src="js/turtle.js"></script>
         <script src="js/wheel.js"></script>
         <script src="js/arrow.js"></script>
@@ -34,6 +41,10 @@
         <script src="js/cmdbutton.js"></script>
         <script src="js/cmdbuttman.js"></script>
         <script src="js/serverconn.js"></script>
+
+        <script src="js/blockly/blocks.js"></script>
+        <script src="js/blockly/gens.js"></script>
+
         
         <script>
         </script>
@@ -44,13 +55,14 @@
         <div id="debug"></div>
         <div class="turtle turtle_large" style="width: 300px; height: 350px"></div>
         <div class="joystick" style="width: 350px; height: 350px"></div>
-        <div class="blockly dialog-cont " style="background-color: white">
-            <div class="" style="vertical-align: bottom;">
+        <div class="editor-dialog dialog-cont " style="background-color: white">
+            <div class="control-bar" style="vertical-align: bottom;">
                 <div class="turtle" style="width: 60px; height: 60px; "></div>
                 <span class="material-icons icon-button-play icon-button icon-button-disabled">play_arrow</span>
                 <span class="material-icons icon-button-stop icon-button">stop</span>
                 <input class="name"  value="No Name!"/>
-            </div>                
+            </div>
+            <div class="blockly-container"><div></div></div>
         </div>
         <div class="cmd-button-utils-container">
             <button class="ui-btn ui-corner-all ui-btn-inline add">
@@ -71,6 +83,57 @@
         <span class="material-icons icon-button-delete icon-button">delete</span>
         <span class="material-icons icon-button-archive icon-button">folder_open</span>
         <span class="material-icons icon-button-archive icon-button">unarchive</span>
+        <span style="font-family: Arrows">CDKLYZmnopqrstyz</span>
+      
+        <xml id="startBlocks" style="display: none">
+            <block type="controls_repeat_ext" id="@S6F/1f#@S7~|NL.Jj`q" x="178" y="85">
+                <value name="TIMES">
+                    <block type="math_number" id="!hntQ#%JZ~qutBwg75mT">
+                        <field name="NUM">3</field>
+                    </block>
+                </value>
+                <statement name="DO">
+                    <block type="output_green_led_field" id="9v6ZfCpO!$v`ravI*te/">
+                        <field name="on">TRUE</field>
+                        <next>
+                            <block type="time_sleep_field" id="+ci)^xM=g7Sj;eg!;bK3">
+                                <field name="sleepval">0.5</field>
+                                <next>
+                                    <block type="output_green_led_field" id="G8uWY#];%XebYd{(v=y?">
+                                        <field name="on">FALSE</field>
+                                        <next>
+                                            <block type="time_sleep_field" id="ZgAW$qAko/T:Fy|m1Y/q">
+                                                <field name="sleepval">0.5</field>
+                                            </block>
+                                        </next>
+                                    </block>
+                                </next>
+                            </block>
+                        </next>
+                    </block>
+                </statement>
+            </block>
+        </xml>
+        
+        
+        <xml id="toolbox" style="display: none">
+            <category name="Stuff" colour="#5CA65C">
+                <block type="controls_if"></block>
+                <block type="logic_compare"></block>
+                <block type="controls_repeat_ext"></block>
+                <block type="math_number"></block>
+                <block type="math_arithmetic"></block>
+                <block type="text"></block>
+                <block type="text_print"></block>
+            </category>
+            <category name="Time" colour="#995599">
+                <block type="time_sleep_input"></block>
+                <block type="time_sleep_field"></block>
+            </category>
+            <category name="Output" colour="#995555">
+                <block type="output_green_led_field"></block>
+            </category>
+        </xml>
         
     </body>
 </html>

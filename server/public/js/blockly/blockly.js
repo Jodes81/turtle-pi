@@ -1,16 +1,5 @@
 
-var blocklyArea = document.getElementById('blocklyArea');
-var blocklyDiv = document.getElementById('blocklyDiv');
-
-var workspace = Blockly.inject(blocklyDiv,
-    {
-        media: 'blockly/media/',
-        toolbox: document.getElementById('toolbox')
-    });
-Blockly.Xml.domToWorkspace(
-        document.getElementById('startBlocks'), 
-        workspace
-    );
+var blocklyArea, blocklyDiv;
     
 var onresize = function(e) {
   // Compute the absolute coordinates and dimensions of blocklyArea.
@@ -29,11 +18,30 @@ var onresize = function(e) {
   blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
 };
 
-window.addEventListener('resize', onresize, false);
-onresize();
-Blockly.svgResize(workspace);
 
-$(function(){
+
+$(function()
+{
+
+    blocklyArea = document.getElementById('blocklyArea');
+    blocklyDiv = document.getElementById('blocklyDiv');
+
+    var workspace = Blockly.inject(blocklyDiv,
+        {
+            media: 'blockly/media/',
+            toolbox: document.getElementById('toolbox')
+        });
+    Blockly.Xml.domToWorkspace(
+            document.getElementById('startBlocks'), 
+            workspace
+        );    
+
+    window.addEventListener('resize', onresize, false);
+    onresize();
+    Blockly.svgResize(workspace);
+
+
+    
     $('#showjs').on("click", function()
     {
         Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
@@ -51,7 +59,8 @@ $(function(){
     {
         console.log("Showing");
         var xmlDom = Blockly.Xml.workspaceToDom(workspace);
-        var xmlText = Blockly.Xml.domToText(xmlDom);
+//        var xmlText = Blockly.Xml.domToText(xmlDom);
+        var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
         $('#xml').html(xmlText);
     });
 });

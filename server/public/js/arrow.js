@@ -29,7 +29,6 @@ Arrow.prototype.draw = function()
               '<div class="double-arrow '+this.classSelector+' ">'
             + '</div>'
     );
-    
     $(this.selector)
             .css(this.conf.pos.edge, Math.round(this.conf.pos.proportion * this.conf.scale[1])+"px")
             .css(this.conf.side, "0px")
