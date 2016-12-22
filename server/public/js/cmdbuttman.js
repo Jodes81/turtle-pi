@@ -61,6 +61,8 @@ CmdButtonManager.prototype.createButton = function(conf)
     var cb = new CmdButton({
         id: conf.id,
         name: conf.name,
+        js: conf.js,
+        xml: conf.xml,
         containerSelector: that.conf.buttonContainerSelector,
         cmdEditor: that.conf.cmdEditor,
         serverConn: that.conf.serverConn
@@ -85,6 +87,7 @@ CmdButtonManager.prototype.msgRx = function(msg)
             this.createButton(msg.value);// {buttons:[{name: , id},{}]}
             break;
         case "initResponse":
+//            console.log("initResponse:", msg.value);
             var response = msg.value; // {buttons:[{name: , id},{}]}
             for (var i in response.buttons)
             {

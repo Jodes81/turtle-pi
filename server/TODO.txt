@@ -1,0 +1,29 @@
+Server
+======
+ - On all WebSockets disconnected: shut down turtle: stop cmd execution, motors, etc. Complication: some commands
+        will be intended to maintain state on exit: e.g. LEDs
+ - On second connection: disconnect first & revert to off state
+ - REFACTOR...
+    - DRY Commands
+
+
+
+Client
+======
+ - CmdEditor: play & stop buttons
+ - Joystick arrows & motor control
+ - REFACTOR...
+    - UNWEBIFY CmdButton/CmdButtman/CmdEditor/Blockly/ServerConn
+
+
+Both
+====
+ - REFACTOR EVERYTHING. What a fucking mess; Asynchronous hell, no tests, blurred responsibilities... not 
+        DRY. Cross client/server wetness. Also see Client/Server REFACTOR
+ - Timeout: switch off everything
+ - Archive area+buttons
+
+
+
+
+

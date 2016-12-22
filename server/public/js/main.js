@@ -37,7 +37,10 @@ function doLoad()
         retryTest();
     });
 
-    cmdEditor = new CmdEditor({ selector: "div.editor-dialog" });
+    cmdEditor = new CmdEditor({ 
+        selector: "div.editor-dialog",
+        serverConn: serverConn
+    });
 
     cmdButtonManager = new CmdButtonManager({
         serverConn: serverConn,
@@ -61,16 +64,6 @@ function doLoad()
         }
     });
 
-    function cheekyButton(sel, name){
-        $(sel).on("click", function(){
-            serverConn.sendMessage({ msgFor: "guiCommandButton", name: name, value: "" });
-        });
-    }
-    cheekyButton('.RunEval', "RunEval");
-    cheekyButton('.RunVM2', "RunVM2");
-    cheekyButton('.StopVM2', "StopVM2");
-    cheekyButton('.ResetVM2Fiber', "ResetVM2Fiber");
-    cheekyButton('.RunJSInterpreter', "RunJSInterpreter");
 };
 function routeMsgs(msgs)
 {

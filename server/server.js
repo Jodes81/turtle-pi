@@ -1,6 +1,8 @@
 server = {
     messageListeners: [],
     connectionListeners: [],
+    nextConnNum: 0, // Not currently USED. (Solely implemented).
+//    nextUpdateNum: 0, // so clients can identify whether an update is one it made or a different client
     send: function(message)
     {
         return server.wsConns.send(message);
@@ -45,9 +47,14 @@ server = {
                 }
         );
 
-        this.wss.on('connection', function connection(ws){
-            server.wsConns.push(ws);
+        this.wss.on('connection', function(ws)
+        {
+            var conn = {ws: ws, connNum: server.nextConnNum};
+            server.nextConnNum++;
+            server.wsConns.push(conn);
             console.info("New connection");
+            
+//            ws.send(JSON.stringify([{msgFor:"", name:"", value:""}]));
             ws.on('message', function(str){
                 server.onMessage(str);
                 try {
@@ -69,36 +76,13 @@ server = {
                         }
                     }
                 }
-                    /*
-                try {
-                    var o = JSON.parse(str);
-                    switch(o.msgFor){
-                        case "wheel":
-                            turtle.setWheelDirection(o.name, o.value);
-                            break;
-                        case "guiCommandButton":
-            //                guiCommandButton(o.name, o.value);
-            //                break;
-                        case "cmdButtonManager":
-                        case "cmd":
-                            commands.msgRx(o.msgFor, o.name, o.value);
-                            break;
-                        default:
-                            console.log("Unknown msgFor:" + o.msgFor);
-                            break;
-                    }
-                } catch (e) {
-                    console.log("Problem handling received message: \n", e);
-                }
-                */
             });
             ws.on('error', function (error) {
                 console.warn('cws error: %s', error);
             });
+            
 
             server.onConnection(ws);
-//            console.log("New web socket connection made");
-//            ws.send('Hello Apollo, we hear you');
         });
     },
     load: function(){
@@ -135,8 +119,8 @@ server = {
     },
     wsConns: {
         conns: [],
-        push: function(conn){
-            this.conns.push(conn);
+        push: function(wsConn){
+            this.conns.push(wsConn);
         },
         send: function(message){
             this.removeClosed();
@@ -145,9 +129,9 @@ server = {
             for (var i in this.conns){
                 var conn = this.conns[i];
                 if (
-                    conn.readyState === server.WebSocket.OPEN
+                    conn.ws.readyState === server.WebSocket.OPEN
                 ){
-                    conn.send(message);
+                    conn.ws.send(message);
                 } else {
                     console.warn('Could not send message: websocket not open. ('+message+')');
                 }
@@ -160,8 +144,8 @@ server = {
             var openConns = [];
             for (var i in this.conns){
                 if (
-                        this.conns[i].readyState !== server.WebSocket.CLOSING &&
-                        this.conns[i].readyState !== server.WebSocket.CLOSED
+                        this.conns[i].ws.readyState !== server.WebSocket.CLOSING &&
+                        this.conns[i].ws.readyState !== server.WebSocket.CLOSED
                 ){
                     openConns.push(this.conns[i]);
                 }

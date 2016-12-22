@@ -19,7 +19,7 @@ var hardware =
     green_led: function(active)
     {
         active = hardware.parsePinValue(active);
-        console.log("Actual LED: " + active + "("+(typeof active)+")");
+//        console.log("Actual LED: " + active + "("+(typeof active)+")");
         hardware.wpi.digitalWrite(hardware.conf.LED_GREEN, active);
     },
     

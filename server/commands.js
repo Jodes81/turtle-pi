@@ -7,6 +7,8 @@ var commands =
     init: function(conf){
         commands.db = conf.db;
         commands.server = conf.server;
+        commands.onRun = conf.onRun;
+        commands.onStop = conf.onStop;
         
         commands.db.onReady(function(){
             commands.db.retrieve("buttons", function(val)
@@ -33,6 +35,7 @@ var commands =
     },
     runCommand: function(value)
     {
+        var that = this;
         var messages = [];
         if (this.activeCommand != null){
             messages.push({
@@ -54,6 +57,11 @@ var commands =
         });
         this.activeCommand = value.id;
         commands.server.sendMessageSet(messages);
+        this.getButton(this.activeCommand, function(button)
+        {
+            that.onStop();
+            that.onRun(button.js);
+        });
     },
     stopCommand: function(value)
     {
@@ -66,6 +74,14 @@ var commands =
                 active: false
             }
         });
+        this.activeCommand = value.id;
+        this.onStop();
+    },
+    stopActiveCommand: function()
+    {
+        if (this.activeCommand != null){
+            this.stopCommand({id: this.activeCommand});
+        }
     },
     msgRx: function(msgFor, name, value)
     {
@@ -132,7 +148,8 @@ var commands =
 
             buttons.push({
                 name: name,
-                id: id
+                id: id,
+                xml: "<xml></xml>"
             });
             
             commands.db.store("buttons", buttons, function(){});

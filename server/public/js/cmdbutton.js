@@ -5,6 +5,8 @@ var CmdButton = function(conf)
     this.defConf = {
         id: null,
         name: "Button",
+        xml: "",
+        js: "",
         containerSelector: "#cmdbutton", 
         active: false,
         onPress: function(){},
@@ -16,7 +18,7 @@ var CmdButton = function(conf)
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
-    update(this, this.conf, ['id', 'name']); 
+    update(this, this.conf, ['id', 'name', 'xml', 'js']); 
 
     this.classSelector = 'cmd-button-'+this.conf.id;
     this.selector = this.conf.containerSelector+" ."+this.classSelector;
@@ -49,8 +51,11 @@ CmdButton.prototype.changeName = function(newName)
 CmdButton.prototype.update = function(value)
 {
     update(this, value, ['name']); 
-    $(this.nameSelector).html(this.name);
+    $(this.nameSelector).text(this.name);
     this.conf.cmdEditor.updateName(this.name);
+//    causes a whole load of problems. This method is only run when a change is made on the client side and mirrored 
+//    back by the server. The following can reverse latest changes, effectively freezing the client from making changes.
+//    this.conf.cmdEditor.updateBlockly(this); 
 };
 CmdButton.prototype.delete = function()
 {
@@ -76,16 +81,6 @@ CmdButton.prototype.animatePlay = function(enabled)
                 that.animatePlay(true);
             }, 300);
         }, 300);
-        /*
-        var that = this;
-        $(this.playSelector).animate({
-            color: "#000"
-        }, 300).animate({
-            color: "#ccc"
-        }, 300, function(){ 
-            that.animatePlay(); 
-        });
-        */
     } else {
         clearTimeout(this.playAnimTimeout);
     }
@@ -106,6 +101,10 @@ CmdButton.prototype.setActive = function(active)
         this.animatePlay(false);
     }
 };
+//CmdButton.prototype.setWorkspace = function(workspace)
+//{
+//    this.workspace = workspace;
+//};
 CmdButton.prototype.draw = function()
 {
     var that = this;
@@ -122,7 +121,7 @@ CmdButton.prototype.draw = function()
             '<span class="material-icons icon-button-delete icon-button">delete</span>'+
             '</div>'
                 );
-    $(this.nameSelector).html(this.conf.name);
+    $(this.nameSelector).text(this.conf.name);
     
     $(this.mainButtonSelector).on("click", function(){
         that.conf.serverConn.sendMessage({

@@ -16,9 +16,6 @@ mkdir -p ~/play
 mkdir -p ~/utils
 
 
-echo "=============== apt-get update ==============="
-apt-get update
-
 echo "=============== Set up paths and preferences ==============="
 
 echo "--- Set up path ---"
@@ -133,33 +130,11 @@ echo .
 echo "=============== Blockly ==============="
 git clone git@github.com:google/blockly.git ~/lib/blockly --depth 1
 
-
-# echo .
-# echo "=============== Motion ==============="
-# apt-get install motion -y
-# cp -f /root/turtle-pi/stuff/motion /etc/default/motion
-# cp -f /root/turtle-pi/stuff/motion.conf /etc/motion/motion.conf
-
-echo .
-echo "=============== MJPG-Streamer ==============="
-# https://www.raspberrypi.org/forums/viewtopic.php?p=164539#p164539
-# http://unix.stackexchange.com/questions/113893/how-do-i-find-out-which-process-is-using-my-v4l2-webcam
-# https://www.raspberrypi.org/forums/viewtopic.php?t=48597
-apt-get install libv41 libjpeg8-dev imagemagick -y
-git clone git@github.com:jacksonliam/mjpg-streamer.git /root/mjpg-streamer
-cd mjpg-streamer/mjpg-streamer-experimental
-make USE_LIBV4L2=true clean all
-# Not sure the following actually works
-make DESTDIR=/usr install
-# THEN CALL THIS TO START THE WEBCAM:
-# ./mjpg_streamer -i "./input_uvc.so -f 10 -r 320x240" -o "./output_http.so -p 8090 -w ./www"
-# THEN NAVIGATE TO THIS PAGE:
-# http://192.168.0.12:8090/?action=stream
-
 echo .
 echo .
 echo "======================================="
 echo "=========== Install Complete =========="
 echo "======================================="
 echo .
+
 echo .

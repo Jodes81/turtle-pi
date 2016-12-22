@@ -11,6 +11,7 @@ function green_led(active)
 
 var Sandbox = function(conf, fns)
 {
+    var that = this;
     this.stepsRun = 0;
     this.startTime = null;
     this.stepperTimeout = null;
@@ -22,7 +23,10 @@ var Sandbox = function(conf, fns)
         finished: function(steps, time){ console.log("Finished. Steps:"+steps+", time:"+time); }
     };
     var defFns = {
-        sleep: [this, this.sleep],
+//        sleep: [this, this.sleep],
+        sleep: function(s){
+            that.sleep(s * 1000);
+        },
         green_led: green_led
     };
     this.conf = defConf;
@@ -34,8 +38,12 @@ var Sandbox = function(conf, fns)
         for (var k in fns) this.fns[k] = fns[k];
     }
     this.finished = this.conf.finished;
+    this.init();
+};
+Sandbox.prototype.init = function()
+{
     var that = this;
-    this.interpreterInit = function(interpreter, scope)
+    this.interpreter = new Interpreter('', function(interpreter, scope)
     {
         for (let k in that.fns){
             interpreter.setProperty(
@@ -62,15 +70,12 @@ var Sandbox = function(conf, fns)
                     })
             );    
         }
-    };
-    
-    this.interpreter = new Interpreter('', this.interpreterInit);
-    
+    });
 };
 Sandbox.prototype.sleep = function(ms)
 {
     this.nextStepTime = parseInt(ms) + parseInt(this.stepTime);
-}
+};
 Sandbox.prototype.stop = function()
 {
     if (this.isRunning)
@@ -78,6 +83,7 @@ Sandbox.prototype.stop = function()
         clearTimeout(this.stepperTimeout);
     }
     this.isRunning = false;
+    this.init(); // necessary to clear the unfinished program
 };
 Sandbox.prototype.run = function(code, stepTime)
 {

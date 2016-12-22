@@ -6,6 +6,11 @@ echo "=========== Begin Uninstall ============="
 echo "========================================="
 echo "."
 
+apt-get remove libv41 libjpeg8-dev imagemagick -y
+rm -rf /root/mjpg-streamer
+
+# apt-get remove motion -y
+
 #~/play/tjc/setdown
 ~/utils/metrics/setdown
 ~/utils/autoshutdown/setdown

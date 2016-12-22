@@ -12,13 +12,23 @@ server.start(conf.port, function onMessage(str){
 //    console.log("--Message Rx--", str);
 }, function onConnection(svr){});
 
-var sandbox = new JSISandbox({},{
+var sandbox = new JSISandbox({
+    finished: function(){
+        commands.stopActiveCommand();
+    }
+},{
     green_led: [hardware, hardware.green_led ]
 });
 
 commands.init({
     db: db, 
-    server: server
+    server: server,
+    onRun: function(js){
+        sandbox.run(js);
+    },
+    onStop: function(){
+        sandbox.stop();
+    }
 });
 
 hardware.setup(conf);
