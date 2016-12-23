@@ -22,8 +22,9 @@ Both
         DRY. Cross client/server wetness. Also see Client/Server REFACTOR
  - Timeout: switch off everything
  - Archive area+buttons
-
-
+ - Update loops: when client changes blockly, update server model and in turn other clients without screwing
+        up the client making the changes. Use update tokens(?) and user ids(?)
+ - Unify message names. Request/Response/Broadcast? 
 
 
 

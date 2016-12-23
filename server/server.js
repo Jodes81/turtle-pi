@@ -1,4 +1,5 @@
 server = {
+    queuedMessages: [],
     messageListeners: [],
     connectionListeners: [],
     nextConnNum: 0, // Not currently USED. (Solely implemented).
@@ -6,6 +7,13 @@ server = {
     send: function(message)
     {
         return server.wsConns.send(message);
+    },
+    queueMessage: function(message){
+        this.queuedMessages.push(message);
+    },
+    sendQueuedMessages: function(){
+        server.sendMessageSet(this.queuedMessages);
+        server.queuedMessages = [];
     },
     sendMessageSet: function(messages)
     {
@@ -23,6 +31,44 @@ server = {
         }
         server.messageListeners[conf.msgFor].push(conf);
     },
+    wsConns: {
+        conns: [],
+        push: function(wsConn){
+            this.conns.push(wsConn);
+        },
+        send: function(message){
+            this.removeClosed();
+//            console.log("Sending message to "+this.length()+" connections");
+//            console.log(message);
+            for (var i in this.conns){
+                var conn = this.conns[i];
+                if (
+                    conn.ws.readyState === server.WebSocket.OPEN
+                ){
+                    conn.ws.send(message);
+                } else {
+                    console.warn('Could not send message: websocket not open. ('+message+')');
+                }
+            }
+        },
+        length: function(){
+            return this.conns.length;
+        },
+        removeClosed: function(){
+            var openConns = [];
+            for (var i in this.conns){
+                if (
+                        this.conns[i].ws.readyState !== server.WebSocket.CLOSING &&
+                        this.conns[i].ws.readyState !== server.WebSocket.CLOSED
+                ){
+                    openConns.push(this.conns[i]);
+                }
+            }
+            var num = this.conns.length-openConns.length;
+            if (num) console.info("Removed "+num+" closed WebSocket connections")
+            this.conns = openConns;
+        }
+    }, // websocket connections
     addConnectionListener: function(fn){
         this.connectionListeners.push(fn);
     },
@@ -117,44 +163,6 @@ server = {
         // make all files in /root/lib/blockly/media ACCESSIBLE in [webroot]/blockly/media
         this.app.use('/blockly/media', this.express.static('/root/lib/blockly/media'));
     },
-    wsConns: {
-        conns: [],
-        push: function(wsConn){
-            this.conns.push(wsConn);
-        },
-        send: function(message){
-            this.removeClosed();
-//            console.log("Sending message to "+this.length()+" connections");
-//            console.log(message);
-            for (var i in this.conns){
-                var conn = this.conns[i];
-                if (
-                    conn.ws.readyState === server.WebSocket.OPEN
-                ){
-                    conn.ws.send(message);
-                } else {
-                    console.warn('Could not send message: websocket not open. ('+message+')');
-                }
-            }
-        },
-        length: function(){
-            return this.conns.length;
-        },
-        removeClosed: function(){
-            var openConns = [];
-            for (var i in this.conns){
-                if (
-                        this.conns[i].ws.readyState !== server.WebSocket.CLOSING &&
-                        this.conns[i].ws.readyState !== server.WebSocket.CLOSED
-                ){
-                    openConns.push(this.conns[i]);
-                }
-            }
-            var num = this.conns.length-openConns.length;
-            if (num) console.info("Removed "+num+" closed WebSocket connections")
-            this.conns = openConns;
-        }
-    } // websocket connections
     
 };
 

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+/root/mjpg-streamer/mjpg-streamer-experimental/mjpg_streamer -i "/root/mjpg-streamer/mjpg-streamer-experimental/input_uvc.so -f 15 -r 320x240" -o "/root/mjpg-streamer/mjpg-streamer-experimental/output_http.so -p 8090 -w ./www"
+
+# To kill:
+# ========
+# fuser /dev/video0
+# kill -9 [PID from above command]
+#
+# To view:
+# ========
+# http://192.168.0.12:8090/?action=stream

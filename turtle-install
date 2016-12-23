@@ -43,8 +43,9 @@ EOT
 
 echo "--- Set up binary links ---"
 chmod 0755 /root/turtle-pi/turtle-uninstall
-chmod 0755 /root/turtle-pi/bin/reload-server
-ln -s /root/turtle-pi/bin/reload-server /root/bin/
+chmod 0755 /root/turtle-pi/bin/run-node-server
+chmod 0755 /root/turtle-pi/bin/run-video-server
+ln -s /root/turtle-pi/bin/run-node-server /root/bin/
 
 echo .
 echo "=============== Installing Gitman ==============="
@@ -151,10 +152,21 @@ cd mjpg-streamer/mjpg-streamer-experimental
 make USE_LIBV4L2=true clean all
 # Not sure the following actually works
 make DESTDIR=/usr install
-# THEN CALL THIS TO START THE WEBCAM:
-# ./mjpg_streamer -i "./input_uvc.so -f 10 -r 320x240" -o "./output_http.so -p 8090 -w ./www"
-# THEN NAVIGATE TO THIS PAGE:
-# http://192.168.0.12:8090/?action=stream
+
+echo .
+echo "=============== Install Node Service ==============="
+cp /root/turtle-pi/stuff/turtle-node.service /etc/systemd/system/
+# systemctl enable turtle-node.service
+# systemctl start turtle-node.service
+# systemctl status turtle-node.service
+
+echo .
+echo "========== Install Video Stream Service =========="
+cp /root/turtle-pi/stuff/turtle-video.service /etc/systemd/system/
+# systemctl enable turtle-video.service
+# systemctl start turtle-video.service
+# systemctl status turtle-video.service
+
 
 echo .
 echo .

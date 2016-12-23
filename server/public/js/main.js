@@ -37,6 +37,8 @@ function doLoad()
         retryTest();
     });
 
+    $('.video').attr("src", 'http://'+document.location.hostname+':'+8090+'/?action=stream')
+
     cmdEditor = new CmdEditor({ 
         selector: "div.editor-dialog",
         serverConn: serverConn

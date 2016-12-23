@@ -1,3 +1,0 @@
-#!/bin/bash
-
-/root/bin/node /root/turtle-pi/server/app.js

@@ -14,15 +14,10 @@ var commands =
             commands.db.retrieve("buttons", function(val)
             {
                 if (typeof val === "undefined")
-                {
                     commands.db.store("buttons", [],function(stuff){
                         commands.buttons = [];
                     });
-                }
-                else
-                {
-                    commands.buttons = val;
-                }
+                else commands.buttons = val;
             });
         });
         commands.server.addMessageListener({ msgFor: "cmdButtonManager", onMessage: function(o){
@@ -36,27 +31,22 @@ var commands =
     runCommand: function(value)
     {
         var that = this;
-        var messages = [];
         if (this.activeCommand != null){
-            messages.push({
-                msgFor: "cmdButtonManager",
-                name: "setIsActiveCmd",
+            commands.queueMessage({ name: "setIsActiveCmd",
                 value: {
                     id: this.activeCommand,
                     active: false
                 }
             });
         }
-        messages.push({
-            msgFor: "cmdButtonManager",
-            name: "setIsActiveCmd",
+        commands.queueMessage({ name: "setIsActiveCmd",
             value: {
                 id: value.id,
                 active: true
             }
         });
         this.activeCommand = value.id;
-        commands.server.sendMessageSet(messages);
+        commands.sendQueuedMessages();
         this.getButton(this.activeCommand, function(button)
         {
             that.onStop();
@@ -66,14 +56,13 @@ var commands =
     stopCommand: function(value)
     {
         this.activeCommand = null;
-        commands.server.sendSingleMessage({
-            msgFor: "cmdButtonManager",
-            name: "setIsActiveCmd",
+        commands.queueMessage({ name: "setIsActiveCmd", 
             value: {
                 id: value.id,
                 active: false
             }
         });
+        commands.sendQueuedMessages();
         this.activeCommand = value.id;
         this.onStop();
     },
@@ -89,35 +78,16 @@ var commands =
             case "cmdButtonManager":
                 switch (name)
                 {
-                    case "runCmd":
-                        commands.runCommand(value);
-                        break;
-                    case "stopCmd":
-                        commands.stopCommand(value);
-                        break;
-                    case "newCmd":
-                        commands.newCommand();
-                        break;
-                    case "modifyCmd":
-                        commands.modifyCommand(value);
-                        break;
-                    case "deleteCmd":
-                        commands.deleteCommand(value);
-                        break;
-                    case "initRequest":
-                        commands.initRequest();
-                        break;
-                    default:
-                        console.warn("Unknown msg name: "+name);
-                        break;
+                    case "runCmd":  commands.runCommand(value);             break;
+                    case "stopCmd": commands.stopCommand(value);            break;
+                    case "newCmd": commands.newCommand();                   break;
+                    case "modifyCmd": commands.modifyCommand(value);        break;
+                    case "deleteCmd": commands.deleteCommand(value);        break;
+                    case "initRequest": commands.initRequest();             break;
+                    default: console.warn("Unknown msg name: "+name);       break;
                 }
                 break;
-            case "cmd":
-                
-                break;
-            default:
-                console.warn("Unknown msgFor: "+msgFor);
-                break;
+            default: console.warn("Unknown msgFor: "+msgFor); break;
         }
     },
     getButtons: function(onDone)
@@ -128,13 +98,12 @@ var commands =
     {
         commands.getButtons(function(buttons)
         {
-            commands.server.send(JSON.stringify([{
-                msgFor: "cmdButtonManager",
-                name: "initResponse",
+            commands.queueMessage({ name: "initResponse",
                 value: {
                     buttons: buttons 
                 }
-            }]));
+            });
+            commands.sendQueuedMessages();
         });
     },
     newCommand: function()
@@ -154,14 +123,13 @@ var commands =
             
             commands.db.store("buttons", buttons, function(){});
 
-            commands.server.sendSingleMessage({
-                msgFor: "cmdButtonManager",
-                name: "newCmd",
+            commands.queueMessage({ name: "newCmd",
                 value: {
                     name: name,
                     id: id
                 }
             });
+            commands.sendQueuedMessages();
         });
     },
     modifyCommand: function(value)
@@ -174,11 +142,10 @@ var commands =
             } 
             utils.update(button, value);
             commands.db.store("buttons", buttons, function(){});
-            commands.server.sendSingleMessage({
-                msgFor: "cmdButtonManager",
-                name: "updateCmd",
+            commands.queueMessage({ name: "updateCmd",
                 value: button
             });
+            commands.sendQueuedMessages();
         });
     },
     deleteCommand: function(value)
@@ -191,11 +158,10 @@ var commands =
             } 
             buttons.splice(i, 1);
             commands.db.store("buttons", buttons, function(){});
-            commands.server.sendSingleMessage({
-                msgFor: "cmdButtonManager",
-                name: "removeCmd",
+            commands.queueMessage({ name: "removeCmd",
                 value: button
             });
+            commands.sendQueuedMessages();
         });
     },
     getButton: function(id, onDone)
@@ -209,6 +175,13 @@ var commands =
             }
             onDone(null, buttons);
         });
+    },
+    queueMessage: function(message){
+        message.msgFor = "cmdButtonManager";
+        commands.server.queueMessage(message);
+    },
+    sendQueuedMessages: function(){
+        commands.server.sendQueuedMessages();
     },
 };
 
