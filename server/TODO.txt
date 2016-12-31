@@ -5,7 +5,7 @@ Server
  - On second connection: disconnect first & revert to off state
  - REFACTOR...
     - DRY Commands
-
+ - DB: local cache of buttons object?
 
 
 Client
@@ -27,4 +27,25 @@ Both
  - Unify message names. Request/Response/Broadcast? 
 
 
+=====================================
+=====================================
+===== FRAMEWORKS to investigate =====
+=====================================
+=====================================
+
+
+===== Others =====
+==================
+ - MEAN - 
+ - express-generator - 
+ - mongodb - 
+ - Derby
+
+
+===== LoopBack / ChangeStream =====
+===================================
+
+ - Loopback is all about *models*: https://loopback.io/doc/en/lb3/LoopBack-core-concepts.html
+ - hooks, validation, REST/CRUD, persistance, 
+ - Real time with Socket.io and Angular live set: https://loopback.io/doc/en/lb3/Realtime-socket-io.html
 

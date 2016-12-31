@@ -1,0 +1,34 @@
+{
+  "name": "Program",
+  "base": "PersistedModel",
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "default": "No name yet!"
+    },
+    "active": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "js": {
+      "type": "string",
+      "required": true,
+      "default": " "
+    },
+    "xml": {
+      "type": "string",
+      "required": true,
+      "default": "<xml></xml>"
+    }
+  },
+  "validations": [],
+  "relations": {},
+  "acls": [],
+  "methods": {}
+}

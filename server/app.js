@@ -1,10 +1,10 @@
 var conf = require("./conf");
-var server = require("./server");
-var commands = require("./commands");
-var db = require("./db");
-var Turtle = require("./turtle");
-var JSISandbox = require("./jsisandbox");
-var hardware = require("./hw");
+var server = require("./modules/server");
+var commands = require("./modules/commands");
+var db = require("./modules/db");
+var Turtle = require("./modules/turtle");
+var JSISandbox = require("./modules/jsisandbox");
+var hardware = require("./modules/hw");
 
 console.log("\n-------------- Loading app --------------\n");
 

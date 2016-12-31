@@ -6,6 +6,8 @@ echo "=========== Begin Uninstall ============="
 echo "========================================="
 echo "."
 
+# rm -rf /data/db
+# apt-get remove mongodb-server -y
 apt-get remove libv41 libjpeg8-dev imagemagick -y
 rm -rf /root/mjpg-streamer
 

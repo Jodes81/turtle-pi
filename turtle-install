@@ -46,6 +46,7 @@ chmod 0755 /root/turtle-pi/turtle-uninstall
 chmod 0755 /root/turtle-pi/bin/run-node-server
 chmod 0755 /root/turtle-pi/bin/run-video-server
 ln -s /root/turtle-pi/bin/run-node-server /root/bin/
+ln -s /root/turtle-pi/bin/run-video-server /root/bin/
 
 echo .
 echo "=============== Installing Gitman ==============="
@@ -166,6 +167,15 @@ cp /root/turtle-pi/stuff/turtle-video.service /etc/systemd/system/
 # systemctl enable turtle-video.service
 # systemctl start turtle-video.service
 # systemctl status turtle-video.service
+
+# echo .
+# echo "========== Install MongoDB =========="
+# apt-get install mongodb-server -y
+# mkdir -p /data/db
+
+echo .
+echo "========== Install Strongloop =========="
+npm install -g --save --unsafe-perm strongloop
 
 
 echo .
