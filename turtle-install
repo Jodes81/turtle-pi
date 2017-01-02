@@ -116,14 +116,19 @@ apt-get remove nodejs -y
 if [ ! -d /root/lib/node ]; then
   mkdir -p ~/tmp
   pushd ~/tmp
-  if [ ! -d node-v6.7.0-linux-armv6l ]; then
+#  if [ ! -d node-v6.7.0-linux-armv6l ]; then
+   if [ ! -d node-v7.3.0-linux-armv6l ]; then
     apt-get install xz-utils -y
-    if [ ! -f node-v6.7.0-linux-armv6l.tar.xz ]; then
-      wget https://nodejs.org/dist/v6.7.0/node-v6.7.0-linux-armv6l.tar.xz
+#    if [ ! -f node-v6.7.0-linux-armv6l.tar.xz ]; then
+     if [ ! -f node-v7.3.0-linux-armv6l.tar.xz ]; then
+#      wget https://nodejs.org/dist/v6.7.0/node-v6.7.0-linux-armv6l.tar.xz
+       wget https://nodejs.org/dist/v7.3.0/node-v7.3.0-linux-armv6l.tar.xz
     fi
-    tar -xJf node-v6.7.0-linux-armv6l.tar.xz
+#    tar -xJf node-v6.7.0-linux-armv6l.tar.xz
+     tar -xJf node-v7.3.0-linux-armv6l.tar.xz
   fi
-  cp -R node-v6.7.0-linux-armv6l /root/lib/node
+#  cp -R node-v6.7.0-linux-armv6l /root/lib/node
+   cp -R node-v7.3.0-linux-armv6l /root/lib/node
   popd
 fi
 ln -s /root/lib/node/bin/node /root/bin/node
@@ -173,9 +178,9 @@ cp /root/turtle-pi/stuff/turtle-video.service /etc/systemd/system/
 # apt-get install mongodb-server -y
 # mkdir -p /data/db
 
-echo .
-echo "========== Install Strongloop =========="
-npm install -g --save --unsafe-perm strongloop
+# echo .
+# echo "========== Install Strongloop =========="
+# npm install -g --save --unsafe-perm strongloop
 
 
 echo .

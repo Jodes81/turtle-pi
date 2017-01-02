@@ -1,0 +1,1 @@
+This is a dummy directory to show the blockly folder in the web root
