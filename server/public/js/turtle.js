@@ -36,7 +36,7 @@ Turtle.prototype.msgRx = function(msg)
             this.wheels[msg.name].setDirection(msg.value);
             break;
         default:
-            console.log("Not recognised msgFor type: "+msg.msgFor);
+            console.warn("Not recognised msgFor type: "+msg.msgFor);
             break;
     }
     

@@ -1,5 +1,5 @@
 
-var CmdEditor = function(conf)
+var ProgEditor = function(conf)
 {
     var that = this;
     this.defConf = {
@@ -9,9 +9,10 @@ var CmdEditor = function(conf)
     this.conf = this.defConf; 
     update(this.conf, conf); 
     
+    this.ignoreChangeRefs = {};
     this.blockly = null;
     this.isEditing = false;
-    this.editingCmd = null;
+    this.editingProg = null;
     this.nameSelector = this.conf.selector + " input.name";
     this.turtle = null;
     this.blocklyContainerSelector = this.conf.selector + " .blockly-container";
@@ -22,13 +23,16 @@ var CmdEditor = function(conf)
         selector: this.conf.selector + " .blockly-container div",
         onChange: function(newJs, newXml, e){
             if (!that.isEditing) return;
-            that.editingCmd.xml = newXml;
-            that.editingCmd.js = newJs;
+            that.editingProg.xml = newXml;
+            that.editingProg.js = newJs;
+            var changeRef = Math.random().toString(32);
+            that.ignoreChangeRefs[changeRef] = true;
             serverConn.sendMessage({
-                msgFor: "cmdButtonManager",
-                name: "modifyCmd",
+                msgFor: "progManager",
+                name: "modifyProg",
+                changeRef: changeRef,
                 value: {
-                    id: that.editingCmd.id,
+                    id: that.editingProg.id,
                     js: newJs,
                     xml: newXml
                 }
@@ -37,7 +41,7 @@ var CmdEditor = function(conf)
     });
     this.init();
 };
-CmdEditor.prototype.init = function()
+ProgEditor.prototype.init = function()
 {
     var that = this;
     $(this.conf.selector).dialog({
@@ -51,11 +55,11 @@ CmdEditor.prototype.init = function()
         close: function(){
         },
         beforeClose: function(){
-            that.isEditingCmd = false;
+            that.isEditingProg = false;
         },
     });
     $(this.nameSelector).on("change", function(){
-        that.editingCmd.changeName($(that.nameSelector).val());
+        that.editingProg.changeName($(that.nameSelector).val());
     });
     this.turtle = new Turtle({ selector: this.conf.selector + " .turtle", });
 
@@ -68,21 +72,29 @@ CmdEditor.prototype.init = function()
         that.blockly.resize();
     });
 };
-CmdEditor.prototype.updateName = function(name)
+ProgEditor.prototype.updateName = function(name)
 {
     $(this.nameSelector).val(name);
 };
-CmdEditor.prototype.updateBlockly = function(cmdButton)
+ProgEditor.prototype.updateBlockly = function(prog, confirmingChangeRef)
 {
-    // does this ever get called anyway????
-    if (this.blockly.getXml() == cmdButton.xml) return;
-//    this.blockly.load(cmdButton);
+    if  (
+            this.blockly.getXml() == prog.xml ||
+            this.isChangeRefInIgnoreList(confirmingChangeRef)
+    ){
+        return;
+    }
+    this.blockly.load(prog);
 };
-CmdEditor.prototype.edit = function(cmdButton)
+ProgEditor.prototype.isChangeRefInIgnoreList = function(changeRef)
+{
+    return (typeof this.ignoreChangeRefs[changeRef] !== "undefined");
+};
+ProgEditor.prototype.edit = function(prog)
 {
     this.isEditing = true;
-    this.editingCmd = cmdButton;
+    this.editingProg = prog;
     $(this.conf.selector).dialog('open');
-    $(this.nameSelector).val(cmdButton.name);
-    this.blockly.load(cmdButton);
+    $(this.nameSelector).val(prog.name);
+    this.blockly.load(prog);
 };

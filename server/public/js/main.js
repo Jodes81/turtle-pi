@@ -1,4 +1,4 @@
-var turtle_large, joystick, serverConn, cmdButtonManager, cmdEditor;
+var turtle_large, joystick, serverConn, progManager, progEditor;
 
 $(function(){
         doLoad(); 
@@ -33,23 +33,23 @@ function doLoad()
         }, reconnectTime);
     }    
     serverConn.addCloseListener(function(event){
-        console.log("Websocket closed. wasClean=", event.wasClean);
+        console.info("Websocket closed. wasClean=", event.wasClean);
         retryTest();
     });
 
     $('.video').attr("src", 'http://'+document.location.hostname+':'+8090+'/?action=stream')
 
-    cmdEditor = new CmdEditor({ 
+    progEditor = new ProgEditor({ 
         selector: "div.editor-dialog",
         serverConn: serverConn
     });
 
-    cmdButtonManager = new CmdButtonManager({
+    progManager = new ProgManager({
         serverConn: serverConn,
-        buttonContainerSelector: ".cmd-button-container",
-        cmdEditor: cmdEditor
+        programContainerSelector: ".prog-container",
+        progEditor: progEditor
     });
-    cmdButtonManager.load();
+    progManager.load();
     
     joystick = new Joystick({
         selector: "div.joystick",
@@ -76,10 +76,10 @@ function routeMsgs(msgs)
             case "irSensor":
             case "wheel":
                 turtle_large.msgRx(msg);
-                cmdEditor.turtle.msgRx(msg);
+                progEditor.turtle.msgRx(msg);
                 break;
-            case "cmdButtonManager":
-                //cmdButtonManager.msgRx(msg);
+            case "progManager":
+                //progManager.msgRx(msg);
                 break;
             default:
                 console.warn("Not recognised msgFor type: "+msg.msgFor);

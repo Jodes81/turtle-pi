@@ -1,10 +1,30 @@
 
 var storage = require('node-persist'); // https://www.npmjs.com/package/node-persist
 
+/*
+ * ====== Thoughts =======
+ *  - Add another layer to manage collections of objects, and the objects themselves
+ *  - A `modify()` method for the above
+ *  - Modify objects in memory only, with persistence and asynchronous issues abstracted away
+ *  - Make the methods below return Promises
+ *  - async / await??
+ *  - can the isReady check be removed altogether, and have the operations perform once complete? (Using promises?)
+ *  - Use promises' catch feature to solve the above and other error situations (or try/catch with async/await)
+ *  - 
+ * 
+ */
+
 var db = 
 {
     isReady: false,
     notifyOnReady: [],
+    init: function()
+    {
+        storage.init().then(function(){
+            db.isReady = true;
+            db.notifyReady();
+        });
+    },
     addOnReady: function(callback)
     {
         if (db.isReady)
@@ -35,13 +55,6 @@ var db =
         } else {
             storage.getItem(key).then(onDone);
         }
-    },
-    init: function()
-    {
-        storage.init().then(function(){
-            db.isReady = true;
-            db.notifyReady();
-        });
     },
     notifyReady: function()
     {

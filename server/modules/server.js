@@ -1,54 +1,65 @@
-server = {
-    queuedMessages: [],
+var Connection = function(conf){
+    this.ws = conf.ws;
+    this.queuedMessages = [];
+}
+Connection.prototype.sendPayload = function(payload){
+    if (this.ws.readyState === server.WebSocket.OPEN){
+        this.ws.send(payload);
+    } else {
+        console.warn('Could not send payload: websocket not open. ('+payload+')');
+    }
+};
+Connection.prototype.queueMessage = function(message){
+    this.queuedMessages.push(message);
+};
+Connection.prototype.sendQueuedMessages = function(){
+    this.sendMessageSet(this.queuedMessages);
+    this.queuedMessages = [];
+};
+Connection.prototype.sendMessageSet = function(messages){
+    this.sendPayload(JSON.stringify(messages));
+};
+Connection.prototype.sendSingleMessage = function(message){
+    this.sendMessageSet([message]);
+};
+
+var server = {
     messageListeners: [],
     connectionListeners: [],
-    nextConnNum: 0, // Not currently USED. (Solely implemented).
-//    nextUpdateNum: 0, // so clients can identify whether an update is one it made or a different client
-    send: function(message)
-    {
-        return server.wsConns.send(message);
-    },
-    queueMessage: function(message){
-        this.queuedMessages.push(message);
-    },
-    sendQueuedMessages: function(){
-        server.sendMessageSet(this.queuedMessages);
-        server.queuedMessages = [];
-    },
-    sendMessageSet: function(messages)
-    {
-        return server.send(JSON.stringify(messages));
-    },
-    sendSingleMessage: function(message)
-    {
-//        console.log("Sending ", message);
-        return server.sendMessageSet([message]);
-    },
-    addMessageListener: function(conf){
-        if (typeof server.messageListeners[conf.msgFor] === "undefined") 
-        {
-            server.messageListeners[conf.msgFor] = [];
-        }
-        server.messageListeners[conf.msgFor].push(conf);
-    },
+    sendPayload: function(payload){         this.wsConns.sendPayload(payload);      },
+    queueMessage: function(message){        this.wsConns.queueMessage(message);     },
+    sendQueuedMessages: function(){         this.wsConns.sendQueuedMessages();      },
+    sendMessageSet: function(messages){     this.wsConns.sendMessageSet(messages);  },
+    sendSingleMessage: function(message){   this.wsConns.sendSingleMessage(message);},
     wsConns: {
         conns: [],
         push: function(wsConn){
             this.conns.push(wsConn);
         },
-        send: function(message){
+        sendPayload: function(payload){
             this.removeClosed();
-//            console.log("Sending message to "+this.length()+" connections");
-//            console.log(message);
             for (var i in this.conns){
-                var conn = this.conns[i];
-                if (
-                    conn.ws.readyState === server.WebSocket.OPEN
-                ){
-                    conn.ws.send(message);
-                } else {
-                    console.warn('Could not send message: websocket not open. ('+message+')');
-                }
+                this.conns[i].sendPayload(payload);
+            }
+        },
+        queueMessage: function(message){
+            for (var i in this.conns){
+                this.conns[i].queueMessage(message);
+            }
+        },
+        sendQueuedMessages: function(){
+            for (var i in this.conns){
+                this.conns[i].sendQueuedMessages();
+            }
+        },
+        sendMessageSet: function(messages){
+            for (var i in this.conns){
+                this.conns[i].sendMessageSet(messages);
+            }
+        },
+        sendSingleMessage: function(message){
+            for (var i in this.conns){
+                this.conns[i].sendSingleMessage(message);
             }
         },
         length: function(){
@@ -65,12 +76,19 @@ server = {
                 }
             }
             var num = this.conns.length-openConns.length;
-            if (num) console.info("Removed "+num+" closed WebSocket connections")
+            if (num) console.info("Removed "+num+" closed WebSocket connections");
             this.conns = openConns;
         }
     }, // websocket connections
     addConnectionListener: function(fn){
         this.connectionListeners.push(fn);
+    },
+    addMessageListener: function(conf){
+        if (typeof server.messageListeners[conf.msgFor] === "undefined") 
+        {
+            server.messageListeners[conf.msgFor] = [];
+        }
+        server.messageListeners[conf.msgFor].push(conf);
     },
     start: function(port, onMessage, onConnection){
         this.port = port;
@@ -89,18 +107,17 @@ server = {
         this.http.listen(
                 this.port, 
                 function () { 
-                    console.log('Listening on ' + server.http.address().port);
+                    console.info('Listening on ' + server.http.address().port);
                 }
         );
 
         this.wss.on('connection', function(ws)
         {
-            var conn = {ws: ws, connNum: server.nextConnNum};
-            server.nextConnNum++;
+            var conn = new Connection({
+                ws: ws
+            });
             server.wsConns.push(conn);
-            console.info("New connection");
             
-//            ws.send(JSON.stringify([{msgFor:"", name:"", value:""}]));
             ws.on('message', function(str){
                 server.onMessage(str);
                 try {
@@ -117,7 +134,7 @@ server = {
                         } else {
                             for (var i in listeners)
                             {
-                                listeners[i].onMessage(msg);
+                                listeners[i].onMessage(msg, conn);
                             }
                         }
                     }
@@ -165,5 +182,6 @@ server = {
     },
     
 };
+
 
 module.exports = server;

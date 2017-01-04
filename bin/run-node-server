@@ -3,4 +3,5 @@
 #/root/bin/node /root/turtle-pi/server/app.js
 
 cd /root/turtle-pi/server
-/root/bin/node app.js
+# /root/bin/node app.js
+/root/bin/node --harmony-async-await app.js

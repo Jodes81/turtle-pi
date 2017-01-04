@@ -1,6 +1,6 @@
 
 
-var importer = require("./importer"); // not sure why this path works but hey. (See top of commands.js and app.js)
+var importer = require("./importer"); // not sure why this path works but hey. (See top of programs.js and app.js)
 var Interpreter = importer('./lib/acorn_js_interpreter.js', "Interpreter");
 
 function green_led(active)

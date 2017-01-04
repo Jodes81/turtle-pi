@@ -1,76 +1,75 @@
 
 
-var CmdButton = function(conf)
+var Prog = function(conf)
 {
     this.defConf = {
         id: null,
-        name: "Button",
+        name: "Program",
         xml: "",
         js: "",
-        containerSelector: "#cmdbutton", 
+        containerSelector: "#prog", 
         active: false,
         onPress: function(){},
         onRelease: function(){},
         onFinish: function(){},
         blocklyDialogSelector: "div.blockly",
-        cmdEditor: null,
+        progEditor: null,
         serverConn: null,
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
     update(this, this.conf, ['id', 'name', 'xml', 'js']); 
 
-    this.classSelector = 'cmd-button-'+this.conf.id;
+    this.classSelector = 'prog-'+this.conf.id;
     this.selector = this.conf.containerSelector+" ."+this.classSelector;
-        this.mainButtonSelector = this.selector+" .main-button";
-            this.nameSelector = this.mainButtonSelector+" span.name";
-            this.stopSelector = this.mainButtonSelector+" .icon-stop";
-            this.playSelector = this.mainButtonSelector+" .icon-play";
-        this.settingsButtonSelector = this.selector+" .icon-button-settings";
-        this.archiveButtonSelector = this.selector+" .icon-button-archive";
-        this.deleteButtonSelector = this.selector+" .icon-button-delete";
+        this.mainProgramSelector = this.selector+" .main-program";
+            this.nameSelector = this.mainProgramSelector+" span.name";
+            this.stopSelector = this.mainProgramSelector+" .icon-stop";
+            this.playSelector = this.mainProgramSelector+" .icon-play";
+        this.settingsProgramSelector = this.selector+" .icon-program-settings";
+        this.archiveProgramSelector = this.selector+" .icon-program-archive";
+        this.deleteProgramSelector = this.selector+" .icon-program-delete";
 
     this.playAnimTimeout = null;
     this.isActive = false;
     this.setActive(this.conf.active);
     this.draw();
 };
-CmdButton.prototype.changeName = function(newName)
+Prog.prototype.changeName = function(newName)
 {
     var that = this;
     this.name = newName;
     this.conf.serverConn.sendMessage({
-        msgFor: "cmdButtonManager",
-        name: "modifyCmd",
+        msgFor: "progManager",
+        name: "modifyProg",
         value: {
             id: that.id,
             name: that.name
         }
     });
 };
-CmdButton.prototype.update = function(value)
+Prog.prototype.update = function(value, confirmingChangeRef)
 {
-    update(this, value, ['name']); 
+    console.info("NEW UPDATE! Question: should it update JS as well?? Or just name & xml?");
+    update(this, value, ['name', 'xml']); 
     $(this.nameSelector).text(this.name);
-    this.conf.cmdEditor.updateName(this.name);
-//    causes a whole load of problems. This method is only run when a change is made on the client side and mirrored 
-//    back by the server. The following can reverse latest changes, effectively freezing the client from making changes.
-//    this.conf.cmdEditor.updateBlockly(this); 
+    this.conf.progEditor.updateName(this.name);
+    this.conf.progEditor.updateBlockly(this, confirmingChangeRef); 
 };
-CmdButton.prototype.delete = function()
+Prog.prototype.delete = function()
 {
     var that = this;
     this.conf.serverConn.sendMessage({
-        msgFor: "cmdButtonManager",
-        name: "deleteCmd",
+        msgFor: "progManager",
+        name: "deleteProg",
         value: { id: that.id }
     });
 };
-CmdButton.prototype.remove = function()
+Prog.prototype.remove = function()
 {
     $(this.selector).remove();
 };
-CmdButton.prototype.animatePlay = function(enabled)
+Prog.prototype.animatePlay = function(enabled)
 {
     var that = this;
     if (enabled){
@@ -85,7 +84,7 @@ CmdButton.prototype.animatePlay = function(enabled)
         clearTimeout(this.playAnimTimeout);
     }
 };
-CmdButton.prototype.setActive = function(active)
+Prog.prototype.setActive = function(active)
 {
     this.isActive = active;
     if (this.isActive){
@@ -101,51 +100,51 @@ CmdButton.prototype.setActive = function(active)
         this.animatePlay(false);
     }
 };
-//CmdButton.prototype.setWorkspace = function(workspace)
+//Prog.prototype.setWorkspace = function(workspace)
 //{
 //    this.workspace = workspace;
 //};
-CmdButton.prototype.draw = function()
+Prog.prototype.draw = function()
 {
     var that = this;
     $(this.conf.containerSelector)
         .prepend(
-            '<div class="cmd-button '+this.classSelector+'">'+
-                '<button class="main-button ui-btn ui-corner-all ui-btn-inline ">'+
+            '<div class="prog '+this.classSelector+'">'+
+                '<button class="main-program ui-btn ui-corner-all ui-btn-inline ">'+
                     '<span class="name"></span>'+
                     '<span class="material-icons icon-play icon icon-inactive">play_arrow</span>'+
                     '<span class="material-icons icon-stop icon">stop</span>'+
                 '</button>'+
-            '<span class="material-icons icon-button-settings icon-button">settings</span>'+
-            '<span class="material-icons icon-button-archive icon-button">archive</span>'+
-            '<span class="material-icons icon-button-delete icon-button">delete</span>'+
+            '<span class="material-icons icon-program-settings icon-program">settings</span>'+
+            '<span class="material-icons icon-program-archive icon-program">archive</span>'+
+            '<span class="material-icons icon-program-delete icon-program">delete</span>'+
             '</div>'
                 );
     $(this.nameSelector).text(this.conf.name);
     
-    $(this.mainButtonSelector).on("click", function(){
+    $(this.mainProgramSelector).on("click", function(){
         that.conf.serverConn.sendMessage({
-            msgFor: "cmdButtonManager",
-            name: that.isActive ? "stopCmd" : "runCmd",
+            msgFor: "progManager",
+            name: that.isActive ? "stopProg" : "runProg",
             value: { id: that.id }
         });
     });
-    $(this.mainButtonSelector).on("dblclick taphold", function(){
+    $(this.mainProgramSelector).on("dblclick taphold", function(){
         that.edit();
     });
-    $(this.settingsButtonSelector).on("click", function(){
+    $(this.settingsProgramSelector).on("click", function(){
         that.edit();
     });
-    $(this.deleteButtonSelector).on("click", function(){
+    $(this.deleteProgramSelector).on("click", function(){
         if (confirm("Delete "+that.name+": are you sure?")){
             that.delete();
         }
     });
 };
-CmdButton.prototype.deactivate = function(){};
-CmdButton.prototype.edit = function()
+Prog.prototype.deactivate = function(){};
+Prog.prototype.edit = function()
 {
-    this.conf.cmdEditor.edit(this);
+    this.conf.progEditor.edit(this);
 };
 
 

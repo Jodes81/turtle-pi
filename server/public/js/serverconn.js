@@ -54,7 +54,7 @@ ServerConn.prototype.setup = function()
         try {
             msgs = JSON.parse(event.data);
         } catch (e) {
-            console.log("JSON could not be parsed:"+event.data);
+            console.error("JSON could not be parsed:"+event.data);
         } finally {
             serverConn.conf.onMessages(msgs);
             for (var i in msgs)

@@ -17,14 +17,14 @@ table.blockly {
   height: 60%;
 }
 
-.icon-button {
+.icon-program {
     border-radius: 50%;
     cursor: pointer;
 }
 
 .editor-dialog .turtle, 
 .editor-dialog .ui-input-text,
-.editor-dialog .icon-button {
+.editor-dialog .icon-program {
     margin: 0px 10px;
 }
 .editor-dialog .ui-input-text {
@@ -32,29 +32,29 @@ table.blockly {
     font-size: 25px;
     padding-left: 15px;
 }
-.editor-dialog .icon-button {
+.editor-dialog .icon-program {
     border: 2px solid black;
     font-size: 60px;
 }
-.editor-dialog .icon-button-disabled {
+.editor-dialog .icon-program-disabled {
     color: #bbb;
     border-color: #bbb;
 }
             
-.cmd-button-utils-container span {
+.prog-utils-container span {
     font-size: 20px;
 }
 
-.cmd-button-container div.cmd-button {
+.prog-container div.prog {
     -display: inline-block;
 }
-.cmd-button-container div.cmd-button button.main-button span {
+.prog-container div.prog button.main-program span {
     vertical-align: text-bottom;
 }
-.cmd-button-container div.cmd-button button.main-button span.label {
+.prog-container div.prog button.main-program span.label {
     margin-right: 8px;
 }
-.cmd-button-container div.cmd-button button.main-button .icon {
+.prog-container div.prog button.main-program .icon {
     margin-left: 6px;
     font-size: 20px; 
     border-radius: 50%;
@@ -62,11 +62,11 @@ table.blockly {
     border: 2px solid #bbb;
     color: #bbb;
 } 
-.cmd-button-container div.cmd-button button.main-button .icon-inactive {
+.prog-container div.prog button.main-program .icon-inactive {
     color: #000;
     border-color: #000;
 }
-.cmd-button-container div.cmd-button .icon-button {
+.prog-container div.prog .icon-program {
     font-size: 30px;
     vertical-align: middle;
     margin-bottom: 4px;

@@ -41,11 +41,11 @@ BlocklyWrapper.prototype.changeListener = function(e)
         }
 };
 
-BlocklyWrapper.prototype.load = function(cmdButton)
+BlocklyWrapper.prototype.load = function(prog)
 {
     this.isLoading = true;
     this.workspace.clear();
-    var xml = (typeof cmdButton.xml == "undefined") ? "" : cmdButton.xml;
+    var xml = (typeof prog.xml == "undefined") ? "" : prog.xml;
     var xmlDom = Blockly.Xml.textToDom(xml);
     Blockly.Xml.domToWorkspace(
             xmlDom,

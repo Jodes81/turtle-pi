@@ -15,7 +15,7 @@ var Turtle = function(conf){
         turtle.setWheelDirection(o.name, o.value);
     }});
     this.conf.server.addConnectionListener(function(server){
-        server.send(turtle.stateAsMessage());
+        server.sendPayload(turtle.stateAsMessage());
     });
     this.conf.hardware.wpi.wiringPiISR(this.conf.hardware.conf.IR_SENSOR_LEFT, this.conf.hardware.wpi.INT_EDGE_BOTH, function(delta)
     {

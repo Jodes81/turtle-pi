@@ -1,6 +1,6 @@
 var conf = require("./conf");
 var server = require("./modules/server");
-var commands = require("./modules/commands");
+var programs = require("./modules/programs");
 var db = require("./modules/db");
 var Turtle = require("./modules/turtle");
 var JSISandbox = require("./modules/jsisandbox");
@@ -14,13 +14,13 @@ server.start(conf.port, function onMessage(str){
 
 var sandbox = new JSISandbox({
     finished: function(){
-        commands.stopActiveCommand();
+        programs.stopActiveProgram();
     }
 },{
     green_led: [hardware, hardware.green_led ]
 });
 
-commands.init({
+programs.init({
     db: db, 
     server: server,
     onRun: function(js){

@@ -95,7 +95,7 @@ Wheel.prototype.setDirection = function(direction)
             this.arrows["b"].setActive(true);
             break;
         default:
-            console.log("Unknown direction: "+ this.direction)
+            console.warn("Unknown direction: "+ this.direction)
             break;
     }
 };
