@@ -1,17 +1,43 @@
+=====================================
+=====================================
+=====            TO DO          =====
+=====================================
+=====================================
+
 Server
 ======
+ - See server/modules/programs.js > programNotFound(), runProgram(), deleteProgram()
  - On all WebSockets disconnected: shut down turtle: stop cmd execution, motors, etc. Complication: some commands
         will be intended to maintain state on exit: e.g. LEDs
  - On second connection: disconnect first & revert to off state
- - REFACTOR...
-    - DRY Commands
- - DB: local cache of buttons object?
 
 
 Client
 ======
  - CmdEditor: play & stop buttons
  - Joystick arrows & motor control
+
+Both
+====
+ - Timeout: switch off everything
+ - Archive area+buttons
+
+
+=====================================
+=====================================
+=====   Refactoring Thoughts    =====
+=====================================
+=====================================
+
+Server
+======
+ - REFACTOR...
+    - DRY Commands
+ - DB: local cache of buttons object?
+ - async/await/Promise
+
+Client
+======
  - REFACTOR...
     - UNWEBIFY CmdButton/CmdButtman/CmdEditor/Blockly/ServerConn
 
@@ -20,12 +46,7 @@ Both
 ====
  - REFACTOR EVERYTHING. What a fucking mess; Asynchronous hell, no tests, blurred responsibilities... not 
         DRY. Cross client/server wetness. Also see Client/Server REFACTOR
- - Timeout: switch off everything
- - Archive area+buttons
- - Update loops: when client changes blockly, update server model and in turn other clients without screwing
-        up the client making the changes. Use update tokens(?) and user ids(?)
  - Unify message names. Request/Response/Broadcast? 
-
 
 =====================================
 =====================================

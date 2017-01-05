@@ -21,12 +21,11 @@ var programs =
             });
         });
         programs.server.addMessageListener({ msgFor: "progManager", onMessage: function(o, conn){
-                console.log(o.name, conn);
             switch (o.name)
             {
                 case "runProg":  programs.runProgram(o.value);                  break;
                 case "stopProg": programs.stopProgram(o.value);                 break;
-                case "newProg": programs.newProgram();                          break;
+                case "newProg": programs.newProgram(o.value);                   break;
                 case "modifyProg": programs.modifyProgram(o.value, o.changeRef);break;
                 case "deleteProg": programs.deleteProgram(o.value);             break;
                 case "initRequest": programs.initRequest(conn);                 break;
@@ -54,8 +53,16 @@ var programs =
         });
         this.activeProgram = value.id;
         programs.sendQueuedMessages();
+        
         this.getProgram(this.activeProgram, function(program)
         {
+            // SHIT. This check should be run BEFORE the above!!!!
+            // WHAT A MESS. this.activeProgram would be null?!!?
+            if (program == null){
+                console.warn("runProgram: Program not found! id=" + this.activeProgram);
+                programs.programNotFound(this.activeProgram);
+                return;
+            } 
             that.onStop();
             that.onRun(program.js);
         });
@@ -95,19 +102,29 @@ var programs =
             programs.sendQueuedMessages();
         });
     },
-    newProgram: function()
+    newProgram: function(value)
     {
         programs.getPrograms(function(progs)
         {
-            var num = progs.length;
-            var next = num++;
-            var name = "No Name! #"+next;
-            var id = "prog"+next;
-
+            var id, name;
+            var xml = "<xml></xml>";
+            if (typeof value.id === "undefined")
+            {
+                var num = progs.length;
+                var next = num++;
+                id = "prog"+next;
+                name = "No Name! #"+next;
+            }
+            else
+            {
+                id = value.id;
+                name = (typeof value.name === "undefined") ? id : value.name;
+                xml = (typeof value.xml === "undefined") ? xml : value.xml;
+            }
             progs.push({
                 name: name,
                 id: id,
-                xml: "<xml></xml>"
+                xml: xml
             });
             
             programs.db.store("programs", progs, function(){});
@@ -115,7 +132,8 @@ var programs =
             programs.queueMessage({ name: "newProg",
                 value: {
                     name: name,
-                    id: id
+                    id: id,
+                    xml: xml
                 }
             });
             programs.sendQueuedMessages();
@@ -123,11 +141,11 @@ var programs =
     },
     modifyProgram: function(value, changeRef)
     {
-        console.log("Rx changeRef=",changeRef);
         programs.getProgram(value.id, function(program, progs, i)
         {
             if (program == null){
                 console.warn("modifyProgram: Program not found! id=" + value.id, progs);
+                programs.programNotFound(value.id);
                 return;
             } 
             utils.update(program, value);
@@ -139,8 +157,18 @@ var programs =
             programs.sendQueuedMessages();
         });
     },
+    programNotFound: function(programId)
+    {
+        /*
+        programs.queueMessage({ name: "noSuchProg",
+            value: {id: programId}
+        });
+        programs.sendQueuedMessages();
+        */
+    },
     deleteProgram: function(value)
     {
+        // TO DO: Check program is not running!!!!!
         programs.getProgram(value.id, function(program, progs, i)
         {
             if (program == null){

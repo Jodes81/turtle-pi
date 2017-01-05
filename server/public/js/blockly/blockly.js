@@ -57,7 +57,6 @@ $(function()
     });
     $('#showxml').on("click", function()
     {
-        console.log("Showing");
         var xmlDom = Blockly.Xml.workspaceToDom(workspace);
 //        var xmlText = Blockly.Xml.domToText(xmlDom);
         var xmlText = Blockly.Xml.domToPrettyText(xmlDom);

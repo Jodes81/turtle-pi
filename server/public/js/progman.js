@@ -49,6 +49,7 @@ var ProgManager = function(conf)
 };
 ProgManager.prototype.load = function()
 {
+//    console.log("ProgManager.load() (send(initRequest))");
     this.conf.serverConn.send(JSON.stringify({
         msgFor: "progManager",
         name: "initRequest",
@@ -57,15 +58,20 @@ ProgManager.prototype.load = function()
 };
 ProgManager.prototype.createProgram = function(conf)
 {
-    var that = this;
+    // might be called if no such prog was found when modifying, so a client sent it to be restored and it comes back.
+    if (typeof this.programs[conf.id] !== "undefined")
+    {
+        console.info("Someone deleted this program we're editing, so we restored it... in theory anyway. Otherwise something majorly wrong happened", conf.id, this.programs[conf.id]);
+        return;
+    } 
     var cb = new Prog({
         id: conf.id,
         name: conf.name,
         js: conf.js,
         xml: conf.xml,
-        containerSelector: that.conf.programContainerSelector,
-        progEditor: that.conf.progEditor,
-        serverConn: that.conf.serverConn
+        containerSelector: this.conf.programContainerSelector,
+        progEditor: this.conf.progEditor,
+        serverConn: this.conf.serverConn
     });
     this.programs[cb.id] = cb;
 };
@@ -85,6 +91,9 @@ ProgManager.prototype.msgRx = function(msg)
             break;
         case "newProg":
             this.createProgram(msg.value);// {programs:[{name: , id},{}]}
+            break;
+        case "noSuchProg":
+//            this.programs[msg.value.id].restore();
             break;
         case "initResponse":
             var response = msg.value; // {programs:[{name: , id},{}]}

@@ -19,7 +19,7 @@ var Prog = function(conf)
     this.conf = this.defConf; 
     update(this.conf, conf); 
     update(this, this.conf, ['id', 'name', 'xml', 'js']); 
-
+    this.changeListeners = $.Callbacks();
     this.classSelector = 'prog-'+this.conf.id;
     this.selector = this.conf.containerSelector+" ."+this.classSelector;
         this.mainProgramSelector = this.selector+" .main-program";
@@ -35,6 +35,12 @@ var Prog = function(conf)
     this.setActive(this.conf.active);
     this.draw();
 };
+Prog.prototype.addChangeListener = function(fn){
+    this.changeListeners.add(fn);
+}
+Prog.prototype.removeChangeListener = function(fn){
+    this.changeListeners.remove(fn);
+}
 Prog.prototype.changeName = function(newName)
 {
     var that = this;
@@ -50,11 +56,12 @@ Prog.prototype.changeName = function(newName)
 };
 Prog.prototype.update = function(value, confirmingChangeRef)
 {
-    console.info("NEW UPDATE! Question: should it update JS as well?? Or just name & xml?");
+    console.info("NEW UPDATE! Question: should it update JS as well?? Or just name & xml?", this.name, this.id);
     update(this, value, ['name', 'xml']); 
     $(this.nameSelector).text(this.name);
-    this.conf.progEditor.updateName(this.name);
-    this.conf.progEditor.updateBlockly(this, confirmingChangeRef); 
+    this.changeListeners.fire(this, confirmingChangeRef);
+//    this.conf.progEditor.updateName(this.name);
+//    this.conf.progEditor.updateBlockly(this, confirmingChangeRef); 
 };
 Prog.prototype.delete = function()
 {
@@ -145,6 +152,20 @@ Prog.prototype.deactivate = function(){};
 Prog.prototype.edit = function()
 {
     this.conf.progEditor.edit(this);
+};
+Prog.prototype.restore = function()
+{
+    this.conf.serverConn.sendMessage({
+        msgFor: "progManager",
+        name: "newProg",
+        value: {
+            id: this.id,
+            xml: this.xml,
+            js: this.js,
+            name: this.name,
+//            active: false
+        }
+    });
 };
 
 

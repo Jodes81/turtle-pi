@@ -22,27 +22,28 @@ var BlocklyWrapper = function(conf)
             media: 'blockly/media/',
             toolbox: document.getElementById('toolbox')
         });
-
     this.saveTimeout = null;
     this.workspace.addChangeListener(this.changeListener.bind(this));
 };
 
 BlocklyWrapper.prototype.changeListener = function(e)
 {
-    if (this.isLoading) return;
+    if (this.isLoading) return; // DOES NOT WORK!
     var that = this;
-        if (this.saveTimeout == null){
-            this.saveTimeout = setTimeout(function()
-            {
-                if (that.isLoading) return;
-                that.conf.onChange(that.getJS(), that.getXml(), e);
-                that.saveTimeout = null;
-            }, 500);
-        }
+    if (this.saveTimeout == null){
+        this.saveTimeout = setTimeout(function()
+        {
+            if (that.isLoading) return; // Necessary so if new program is opened, previous will not be replaced with new
+            that.conf.onChange(that.getJS(), that.getXml(), e);
+            that.saveTimeout = null;
+        }, 500);
+    }
+    
 };
 
-BlocklyWrapper.prototype.load = function(prog)
+BlocklyWrapper.prototype.update = function(prog)
 {
+    var that = this;
     this.isLoading = true;
     this.workspace.clear();
     var xml = (typeof prog.xml == "undefined") ? "" : prog.xml;
@@ -51,13 +52,26 @@ BlocklyWrapper.prototype.load = function(prog)
             xmlDom,
             this.workspace
         );    
-    this.resize();
-    if (!this.done) Blockly.svgResize(this.workspace); // trashcan stops working if done more than once!
-    this.isLoading = false;
-    this.done = true;
+    setTimeout(function(){
+        that.isLoading = false; // Blockly triggers onChange asynchronously after workspace updated
+    }, 500);
 };
-BlocklyWrapper.prototype.resize = function() {
-    
+
+BlocklyWrapper.prototype.show = function(prog)
+{
+    this.update(prog);
+    this.resizeDiv();
+    this.resizeSvgIfNotDone(); // MUST NOT be done while is NOT showing
+};
+BlocklyWrapper.prototype.resizeSvgIfNotDone = function()
+{
+    if (this.resizeSvgDone !== true){
+        Blockly.svgResize(this.workspace);
+    } // trashcan stops working if done more than once!
+    this.resizeSvgDone = true;
+};
+BlocklyWrapper.prototype.resizeDiv = function()
+{
     var container = $(this.conf.containerSelector)[0];
     var blocklyDiv = $(this.conf.selector)[0];
     

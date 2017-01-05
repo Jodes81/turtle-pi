@@ -8,7 +8,6 @@ var ProgEditor = function(conf)
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
-    
     this.ignoreChangeRefs = {};
     this.blockly = null;
     this.isEditing = false;
@@ -25,18 +24,7 @@ var ProgEditor = function(conf)
             if (!that.isEditing) return;
             that.editingProg.xml = newXml;
             that.editingProg.js = newJs;
-            var changeRef = Math.random().toString(32);
-            that.ignoreChangeRefs[changeRef] = true;
-            serverConn.sendMessage({
-                msgFor: "progManager",
-                name: "modifyProg",
-                changeRef: changeRef,
-                value: {
-                    id: that.editingProg.id,
-                    js: newJs,
-                    xml: newXml
-                }
-            })
+            that.sendChangesToServer();
         },
     });
     this.init();
@@ -46,7 +34,6 @@ ProgEditor.prototype.init = function()
     var that = this;
     $(this.conf.selector).dialog({
         autoOpen: false,
-//        modal: true,
         resizable: false,
         width: "98%",
         height: 0.98 * $(window).height(),
@@ -55,7 +42,8 @@ ProgEditor.prototype.init = function()
         close: function(){
         },
         beforeClose: function(){
-            that.isEditingProg = false;
+            that.isEditing = false;
+            //that.editingProg = null; // STILL LOADED but dialog CLOSED
         },
     });
     $(this.nameSelector).on("change", function(){
@@ -71,6 +59,12 @@ ProgEditor.prototype.init = function()
         $(that.conf.selector).dialog("option", "height", $(window).height() * 0.98);
         that.blockly.resize();
     });
+    this.progChangeListener = function(prog, confirmingChangeRef)
+    {
+        this.updateName(prog.name);
+        this.updateBlockly(prog, confirmingChangeRef); 
+    };
+    this.progChangeListener = this.progChangeListener.bind(this);
 };
 ProgEditor.prototype.updateName = function(name)
 {
@@ -84,7 +78,7 @@ ProgEditor.prototype.updateBlockly = function(prog, confirmingChangeRef)
     ){
         return;
     }
-    this.blockly.load(prog);
+    this.blockly.update(prog);
 };
 ProgEditor.prototype.isChangeRefInIgnoreList = function(changeRef)
 {
@@ -92,9 +86,27 @@ ProgEditor.prototype.isChangeRefInIgnoreList = function(changeRef)
 };
 ProgEditor.prototype.edit = function(prog)
 {
+    
+    if (this.editingProg != null) this.editingProg.removeChangeListener(this.progChangeListener);
     this.isEditing = true;
     this.editingProg = prog;
+    this.editingProg.addChangeListener(this.progChangeListener);
     $(this.conf.selector).dialog('open');
     $(this.nameSelector).val(prog.name);
-    this.blockly.load(prog);
+    this.blockly.show(prog);
 };
+ProgEditor.prototype.sendChangesToServer = function()
+{
+    var changeRef = Math.random().toString(32);
+    this.ignoreChangeRefs[changeRef] = true;
+    this.conf.serverConn.sendMessage({
+        msgFor: "progManager",
+        name: "modifyProg",
+        changeRef: changeRef,
+        value: {
+            id: this.editingProg.id,
+            js: this.editingProg.js,
+            xml: this.editingProg.xml
+        }
+    });
+}
