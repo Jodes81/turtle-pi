@@ -144,7 +144,7 @@ var programs =
         programs.getProgram(value.id, function(program, progs, i)
         {
             if (program == null){
-                console.warn("modifyProgram: Program not found! id=" + value.id, progs);
+                console.warn("modifyProgram: Program not found! id=" + value.id);
                 programs.programNotFound(value.id);
                 return;
             } 
@@ -159,12 +159,10 @@ var programs =
     },
     programNotFound: function(programId)
     {
-        /*
         programs.queueMessage({ name: "noSuchProg",
             value: {id: programId}
         });
         programs.sendQueuedMessages();
-        */
     },
     deleteProgram: function(value)
     {
@@ -172,7 +170,7 @@ var programs =
         programs.getProgram(value.id, function(program, progs, i)
         {
             if (program == null){
-                console.warn("deleteProgram: Program not found! id=" + value.id, progs);
+                console.warn("deleteProgram: Program not found! id=" + value.id);
                 return;
             } 
             progs.splice(i, 1);

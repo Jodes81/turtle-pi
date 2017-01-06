@@ -57,11 +57,10 @@ Prog.prototype.changeName = function(newName)
 Prog.prototype.update = function(value, confirmingChangeRef)
 {
     console.info("NEW UPDATE! Question: should it update JS as well?? Or just name & xml?", this.name, this.id);
-    update(this, value, ['name', 'xml']); 
+    update(this, value, ['name', 'xml', 'active']); 
     $(this.nameSelector).text(this.name);
+    this.setActive(this.active);
     this.changeListeners.fire(this, confirmingChangeRef);
-//    this.conf.progEditor.updateName(this.name);
-//    this.conf.progEditor.updateBlockly(this, confirmingChangeRef); 
 };
 Prog.prototype.delete = function()
 {
@@ -101,7 +100,7 @@ Prog.prototype.setActive = function(active)
     } else {
         $(this.playSelector)
                 .addClass("icon-inactive")
-                .clearQueue()
+//                .clearQueue()
                 .css("color", "#000");
         $(this.stopSelector).removeClass("icon-inactive");
         this.animatePlay(false);
@@ -130,11 +129,7 @@ Prog.prototype.draw = function()
     $(this.nameSelector).text(this.conf.name);
     
     $(this.mainProgramSelector).on("click", function(){
-        that.conf.serverConn.sendMessage({
-            msgFor: "progManager",
-            name: that.isActive ? "stopProg" : "runProg",
-            value: { id: that.id }
-        });
+        that.run(!that.isActive);
     });
     $(this.mainProgramSelector).on("dblclick taphold", function(){
         that.edit();
@@ -148,7 +143,14 @@ Prog.prototype.draw = function()
         }
     });
 };
-Prog.prototype.deactivate = function(){};
+Prog.prototype.run = function(run)
+{
+    this.conf.serverConn.sendMessage({
+        msgFor: "progManager",
+        name: run ? "runProg" : "stopProg",
+        value: { id: this.id }
+    });
+};
 Prog.prototype.edit = function()
 {
     this.conf.progEditor.edit(this);

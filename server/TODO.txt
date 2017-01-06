@@ -14,13 +14,13 @@ Server
 
 Client
 ======
- - CmdEditor: play & stop buttons
  - Joystick arrows & motor control
 
 Both
 ====
  - Timeout: switch off everything
  - Archive area+buttons
+ - merge setIsActiveProg and updateProg 
 
 
 =====================================

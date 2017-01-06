@@ -28,28 +28,10 @@ var ProgManager = function(conf)
         }
     });
     
-    function animatePlay(){
-        $('.icon-program-play').css("color", "#000");
-        setTimeout(function(){
-            $('.icon-program-play').css("color", "#ccc");
-            setTimeout(function(){
-                animatePlay();
-            }, 300);
-        }, 300);
-        /*
-        $('.icon-program-play').animate({
-            color: "#000"
-        }, 300).animate({
-            color: "#ccc"
-        }, 300, function(){ play_animate(); });
-        */
-    }
-    animatePlay();
     
 };
 ProgManager.prototype.load = function()
 {
-//    console.log("ProgManager.load() (send(initRequest))");
     this.conf.serverConn.send(JSON.stringify({
         msgFor: "progManager",
         name: "initRequest",
@@ -58,10 +40,10 @@ ProgManager.prototype.load = function()
 };
 ProgManager.prototype.createProgram = function(conf)
 {
-    // might be called if no such prog was found when modifying, so a client sent it to be restored and it comes back.
     if (typeof this.programs[conf.id] !== "undefined")
     {
-        console.info("Someone deleted this program we're editing, so we restored it... in theory anyway. Otherwise something majorly wrong happened", conf.id, this.programs[conf.id]);
+        console.info("Someone deleted this program we're editing, so we restored it... "+
+            "in theory anyway. Otherwise something majorly wrong happened. id=", conf.id);
         return;
     } 
     var cb = new Prog({
@@ -79,13 +61,24 @@ ProgManager.prototype.msgRx = function(msg)
 {
     switch (msg.name)
     {
+//        case "setIsActiveProg":
+//            this.programs[msg.value.id].setActive(msg.value.active);
+//            break;
         case "setIsActiveProg":
-            this.programs[msg.value.id].setActive(msg.value.active);
-            break;
         case "updateProg":
             this.programs[msg.value.id].update(msg.value, msg.confirmingChangeRef);
             break;
         case "removeProg":
+            if  (
+                    this.conf.progEditor.isEditing && 
+                    this.conf.progEditor.editingProg === this.programs[msg.value.id] &&
+                    confirm("Someone deleted this program! Would you like to restore it?")
+                )
+            {
+                this.programs[msg.value.id].restore();
+                break;
+            }
+            this.conf.progEditor.deleteProg(this.programs[msg.value.id]);
             this.programs[msg.value.id].remove();
             delete this.programs[msg.value.id];
             break;
@@ -93,7 +86,7 @@ ProgManager.prototype.msgRx = function(msg)
             this.createProgram(msg.value);// {programs:[{name: , id},{}]}
             break;
         case "noSuchProg":
-//            this.programs[msg.value.id].restore();
+            console.warn("No such program found! id=", msg.value.id);
             break;
         case "initResponse":
             var response = msg.value; // {programs:[{name: , id},{}]}

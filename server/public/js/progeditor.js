@@ -27,11 +27,10 @@ var ProgEditor = function(conf)
             that.sendChangesToServer();
         },
     });
-    this.init();
-};
-ProgEditor.prototype.init = function()
-{
-    var that = this;
+    this.playAnimTimeout = null;
+    this.playSelector = '.icon-program-play';
+    this.stopSelector = '.icon-program-stop';
+
     $(this.conf.selector).dialog({
         autoOpen: false,
         resizable: false,
@@ -49,6 +48,13 @@ ProgEditor.prototype.init = function()
     $(this.nameSelector).on("change", function(){
         that.editingProg.changeName($(that.nameSelector).val());
     });
+    $(this.playSelector).on("click", function(){
+        that.editingProg.run(true);
+    });
+    $(this.stopSelector).on("click", function(){
+        that.editingProg.run(false);
+    });
+    
     this.turtle = new Turtle({ selector: this.conf.selector + " .turtle", });
 
     $(this.conf.controlSelector)
@@ -57,14 +63,52 @@ ProgEditor.prototype.init = function()
     $(window).resize(function(){
         $(that.conf.selector).dialog("option", "width", $(window).width() * 0.98);
         $(that.conf.selector).dialog("option", "height", $(window).height() * 0.98);
-        that.blockly.resize();
+        that.blockly.resizeDiv();
     });
     this.progChangeListener = function(prog, confirmingChangeRef)
     {
         this.updateName(prog.name);
         this.updateBlockly(prog, confirmingChangeRef); 
+        this.updateIsActive(prog.active); 
     };
     this.progChangeListener = this.progChangeListener.bind(this);
+};
+ProgEditor.prototype.deleteProg = function(prog)
+{
+    if (this.isEditing && prog === this.editingProg)
+    {
+        $(this.conf.selector).dialog("close");
+    }
+};
+ProgEditor.prototype.updateIsActive = function(active)
+{
+    if (active){
+        $(this.playSelector).addClass("icon-program-disabled");
+        $(this.stopSelector).removeClass("icon-program-disabled");
+        this.animatePlay(true);
+    } else {
+        $(this.playSelector)
+                .removeClass("icon-program-disabled")
+//                .clearQueue()
+                .css("color", "#000");
+        $(this.stopSelector).addClass("icon-program-disabled");
+        this.animatePlay(false);
+    }
+};
+ProgEditor.prototype.animatePlay = function(enabled)
+{
+    var that = this;
+    if (enabled){
+        $(this.playSelector).css("color", "#000");
+        this.playAnimTimeout = setTimeout(function(){
+            $(that.playSelector).css("color", "#ccc");
+            that.playAnimTimeout = setTimeout(function(){
+                that.animatePlay(true);
+            }, 300);
+        }, 300);
+    } else {
+        clearTimeout(this.playAnimTimeout);
+    }
 };
 ProgEditor.prototype.updateName = function(name)
 {
@@ -72,8 +116,7 @@ ProgEditor.prototype.updateName = function(name)
 };
 ProgEditor.prototype.updateBlockly = function(prog, confirmingChangeRef)
 {
-    if  (
-            this.blockly.getXml() == prog.xml ||
+    if  (   this.blockly.getXml() == prog.xml ||
             this.isChangeRefInIgnoreList(confirmingChangeRef)
     ){
         return;
@@ -86,13 +129,13 @@ ProgEditor.prototype.isChangeRefInIgnoreList = function(changeRef)
 };
 ProgEditor.prototype.edit = function(prog)
 {
-    
     if (this.editingProg != null) this.editingProg.removeChangeListener(this.progChangeListener);
     this.isEditing = true;
     this.editingProg = prog;
     this.editingProg.addChangeListener(this.progChangeListener);
     $(this.conf.selector).dialog('open');
-    $(this.nameSelector).val(prog.name);
+    this.updateName(prog.name);
+    this.updateIsActive(prog.active);
     this.blockly.show(prog);
 };
 ProgEditor.prototype.sendChangesToServer = function()
