@@ -10,7 +10,6 @@ var ProgEditor = function(conf)
     update(this.conf, conf); 
     this.ignoreChangeRefs = {};
     this.blockly = null;
-    this.isEditing = false;
     this.editingProg = null;
     this.nameSelector = this.conf.selector + " input.name";
     this.turtle = null;
@@ -21,7 +20,7 @@ var ProgEditor = function(conf)
         containerSelector: this.blocklyContainerSelector,
         selector: this.conf.selector + " .blockly-container div",
         onChange: function(newJs, newXml, e){
-            if (!that.isEditing) return;
+            if (that.editingProg == null) return;
             that.editingProg.xml = newXml;
             that.editingProg.js = newJs;
             that.sendChangesToServer();
@@ -41,8 +40,7 @@ var ProgEditor = function(conf)
         close: function(){
         },
         beforeClose: function(){
-            that.isEditing = false;
-            //that.editingProg = null; // STILL LOADED but dialog CLOSED
+            that.editingProg = null;
         },
     });
     $(this.nameSelector).on("change", function(){
@@ -73,11 +71,12 @@ var ProgEditor = function(conf)
     };
     this.progChangeListener = this.progChangeListener.bind(this);
 };
-ProgEditor.prototype.deleteProg = function(prog)
+ProgEditor.prototype.closeIfEditing = function(prog)
 {
-    if (this.isEditing && prog === this.editingProg)
+    if (prog === this.editingProg)
     {
         $(this.conf.selector).dialog("close");
+        that.editingProg = null;
     }
 };
 ProgEditor.prototype.updateIsActive = function(active)
@@ -89,7 +88,6 @@ ProgEditor.prototype.updateIsActive = function(active)
     } else {
         $(this.playSelector)
                 .removeClass("icon-program-disabled")
-//                .clearQueue()
                 .css("color", "#000");
         $(this.stopSelector).addClass("icon-program-disabled");
         this.animatePlay(false);
@@ -130,7 +128,6 @@ ProgEditor.prototype.isChangeRefInIgnoreList = function(changeRef)
 ProgEditor.prototype.edit = function(prog)
 {
     if (this.editingProg != null) this.editingProg.removeChangeListener(this.progChangeListener);
-    this.isEditing = true;
     this.editingProg = prog;
     this.editingProg.addChangeListener(this.progChangeListener);
     $(this.conf.selector).dialog('open');

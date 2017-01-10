@@ -38,14 +38,14 @@ var programs =
     {
         var that = this;
         if (this.activeProgram != null){
-            programs.queueMessage({ name: "setIsActiveProg",
+            programs.queueMessage({ name: "updateProg",
                 value: {
                     id: this.activeProgram,
                     active: false
                 }
             });
         }
-        programs.queueMessage({ name: "setIsActiveProg",
+        programs.queueMessage({ name: "updateProg",
             value: {
                 id: value.id,
                 active: true
@@ -70,7 +70,7 @@ var programs =
     stopProgram: function(value)
     {
         this.activeProgram = null;
-        programs.queueMessage({ name: "setIsActiveProg", 
+        programs.queueMessage({ name: "updateProg", 
             value: {
                 id: value.id,
                 active: false

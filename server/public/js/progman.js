@@ -1,17 +1,15 @@
 
 var ProgManager = function(conf)
 {
+    var that = this;
     this.defConf = {
         controlsContainerSelector: ".prog-utils-container",
         programContainerSelector: "#prog-container", 
         serverConn: null,
-        blocklyDialogSelector: "div.blockly",
         progEditor: null
     };
     this.conf = this.defConf; 
     update(this.conf, conf); 
-    
-    var that = this;
     this.programs = {};
     $(this.conf.controlsContainerSelector+" .add").on("click", function(){
         that.conf.serverConn.sendMessage({
@@ -20,15 +18,12 @@ var ProgManager = function(conf)
             value: ""
         });
     });
-    
     this.conf.serverConn.addMessageListener({
         msgFor: "progManager", 
         onMessage: function(msg){
             that.msgRx(msg);
         }
     });
-    
-    
 };
 ProgManager.prototype.load = function()
 {
@@ -61,16 +56,11 @@ ProgManager.prototype.msgRx = function(msg)
 {
     switch (msg.name)
     {
-//        case "setIsActiveProg":
-//            this.programs[msg.value.id].setActive(msg.value.active);
-//            break;
-        case "setIsActiveProg":
         case "updateProg":
             this.programs[msg.value.id].update(msg.value, msg.confirmingChangeRef);
             break;
         case "removeProg":
             if  (
-                    this.conf.progEditor.isEditing && 
                     this.conf.progEditor.editingProg === this.programs[msg.value.id] &&
                     confirm("Someone deleted this program! Would you like to restore it?")
                 )
@@ -78,8 +68,8 @@ ProgManager.prototype.msgRx = function(msg)
                 this.programs[msg.value.id].restore();
                 break;
             }
-            this.conf.progEditor.deleteProg(this.programs[msg.value.id]);
-            this.programs[msg.value.id].remove();
+            this.conf.progEditor.closeIfEditing(this.programs[msg.value.id]);
+            this.programs[msg.value.id].removeButton();
             delete this.programs[msg.value.id];
             break;
         case "newProg":

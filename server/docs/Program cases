@@ -1,0 +1,34 @@
+C: = Client
+S: = Server
+Cs: = All clients
+
+
+ProgEditor.isEditing, 
+ProgEditor.editingProg 
+
+
+
+UI(+) > 
+    C:ProgManager(()=>())
+        C:serverConn.sendMessage("progManager","newProg","")
+            S:programs.newProgram("")
+                S:programs.queueMessage(program)
+                    S:server.queueMessage("progManager", "newProg", program)
+                        Cs:ProgManager.createProgram(msg.value)
+                            Cs:new Program(msg.value)
+                                Cs.Program.draw()
+
+UI(Edit)
+    C:Program:this.edit():ProgEditor.edit(this);
+        C:ProgEditor.edit():
+            ...if (this.editingProg != null) 
+                ...this.editingProg.removeChangeListener(this.progChangeListener);
+            ...this.isEditing = true;
+            ...this.editingProg = prog;
+            ...this.blockly.show(prog);
+                C:BlocklyWrapper.show(prog)
+                    C.BlocklyWrapper.update(prog);
+                        ...Blockly.Events.disable();
+                        ...Blockly.Xml.domToWorkspace(xmlDom,this.workspace);    
+                        ...Blockly.Events.enable();
+

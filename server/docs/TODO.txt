@@ -15,12 +15,21 @@ Server
 Client
 ======
  - Joystick arrows & motor control
+ - Clicking on new program button shows running indefinitely
 
 Both
 ====
  - Timeout: switch off everything
  - Archive area+buttons
- - merge setIsActiveProg and updateProg 
+ - Text output pane (in main and editor window)
+ - Motor speed control
+ - Audio
+
+Hardware
+========
+ - Make PCB - but first test hardware thoroughly, plus add power control features
+ - Reorganise RPi GPIO pin choices
+ - Audio
 
 
 =====================================
@@ -47,6 +56,7 @@ Both
  - REFACTOR EVERYTHING. What a fucking mess; Asynchronous hell, no tests, blurred responsibilities... not 
         DRY. Cross client/server wetness. Also see Client/Server REFACTOR
  - Unify message names. Request/Response/Broadcast? 
+
 
 =====================================
 =====================================

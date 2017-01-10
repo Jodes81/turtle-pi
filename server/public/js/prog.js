@@ -9,10 +9,6 @@ var Prog = function(conf)
         js: "",
         containerSelector: "#prog", 
         active: false,
-        onPress: function(){},
-        onRelease: function(){},
-        onFinish: function(){},
-        blocklyDialogSelector: "div.blockly",
         progEditor: null,
         serverConn: null,
     };
@@ -20,20 +16,13 @@ var Prog = function(conf)
     update(this.conf, conf); 
     update(this, this.conf, ['id', 'name', 'xml', 'js']); 
     this.changeListeners = $.Callbacks();
-    this.classSelector = 'prog-'+this.conf.id;
-    this.selector = this.conf.containerSelector+" ."+this.classSelector;
-        this.mainProgramSelector = this.selector+" .main-program";
-            this.nameSelector = this.mainProgramSelector+" span.name";
-            this.stopSelector = this.mainProgramSelector+" .icon-stop";
-            this.playSelector = this.mainProgramSelector+" .icon-play";
-        this.settingsProgramSelector = this.selector+" .icon-program-settings";
-        this.archiveProgramSelector = this.selector+" .icon-program-archive";
-        this.deleteProgramSelector = this.selector+" .icon-program-delete";
-
-    this.playAnimTimeout = null;
     this.isActive = false;
+    this.button = new ProgButton({
+        id: this.conf.id,
+        containerSelector: this.conf.containerSelector
+    });
     this.setActive(this.conf.active);
-    this.draw();
+    this.drawButton();
 };
 Prog.prototype.addChangeListener = function(fn){
     this.changeListeners.add(fn);
@@ -62,86 +51,37 @@ Prog.prototype.update = function(value, confirmingChangeRef)
     this.setActive(this.active);
     this.changeListeners.fire(this, confirmingChangeRef);
 };
-Prog.prototype.delete = function()
+Prog.prototype.removeButton = function()
 {
-    var that = this;
-    this.conf.serverConn.sendMessage({
-        msgFor: "progManager",
-        name: "deleteProg",
-        value: { id: that.id }
-    });
-};
-Prog.prototype.remove = function()
-{
-    $(this.selector).remove();
-};
-Prog.prototype.animatePlay = function(enabled)
-{
-    var that = this;
-    if (enabled){
-        $(this.playSelector).css("color", "#000");
-        this.playAnimTimeout = setTimeout(function(){
-            $(that.playSelector).css("color", "#ccc");
-            that.playAnimTimeout = setTimeout(function(){
-                that.animatePlay(true);
-            }, 300);
-        }, 300);
-    } else {
-        clearTimeout(this.playAnimTimeout);
-    }
+    this.button.remove();
 };
 Prog.prototype.setActive = function(active)
 {
     this.isActive = active;
-    if (this.isActive){
-        $(this.playSelector).removeClass("icon-inactive");
-        $(this.stopSelector).addClass("icon-inactive");
-        this.animatePlay(true);
-    } else {
-        $(this.playSelector)
-                .addClass("icon-inactive")
-//                .clearQueue()
-                .css("color", "#000");
-        $(this.stopSelector).removeClass("icon-inactive");
-        this.animatePlay(false);
-    }
+    this.button.setActive(this.isActive);
 };
-//Prog.prototype.setWorkspace = function(workspace)
-//{
-//    this.workspace = workspace;
-//};
-Prog.prototype.draw = function()
+Prog.prototype.drawButton = function()
 {
     var that = this;
-    $(this.conf.containerSelector)
-        .prepend(
-            '<div class="prog '+this.classSelector+'">'+
-                '<button class="main-program ui-btn ui-corner-all ui-btn-inline ">'+
-                    '<span class="name"></span>'+
-                    '<span class="material-icons icon-play icon icon-inactive">play_arrow</span>'+
-                    '<span class="material-icons icon-stop icon">stop</span>'+
-                '</button>'+
-            '<span class="material-icons icon-program-settings icon-program">settings</span>'+
-            '<span class="material-icons icon-program-archive icon-program">archive</span>'+
-            '<span class="material-icons icon-program-delete icon-program">delete</span>'+
-            '</div>'
-                );
-    $(this.nameSelector).text(this.conf.name);
     
-    $(this.mainProgramSelector).on("click", function(){
+    this.button.draw();
+    this.button.setName(this.conf.name);
+    
+    this.button.onToggle = function(){
         that.run(!that.isActive);
-    });
-    $(this.mainProgramSelector).on("dblclick taphold", function(){
-        that.edit();
-    });
-    $(this.settingsProgramSelector).on("click", function(){
-        that.edit();
-    });
-    $(this.deleteProgramSelector).on("click", function(){
+    }.bind(this);
+    this.button.onEdit = function(){
+        that.conf.progEditor.edit(this);
+    }.bind(this);
+    this.button.onDelete = function(){
         if (confirm("Delete "+that.name+": are you sure?")){
-            that.delete();
+            that.conf.serverConn.sendMessage({
+                msgFor: "progManager",
+                name: "deleteProg",
+                value: { id: that.id }
+            });
         }
-    });
+    }.bind(this);
 };
 Prog.prototype.run = function(run)
 {
@@ -150,10 +90,6 @@ Prog.prototype.run = function(run)
         name: run ? "runProg" : "stopProg",
         value: { id: this.id }
     });
-};
-Prog.prototype.edit = function()
-{
-    this.conf.progEditor.edit(this);
 };
 Prog.prototype.restore = function()
 {
@@ -165,7 +101,6 @@ Prog.prototype.restore = function()
             xml: this.xml,
             js: this.js,
             name: this.name,
-//            active: false
         }
     });
 };

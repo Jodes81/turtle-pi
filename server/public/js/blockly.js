@@ -28,33 +28,28 @@ var BlocklyWrapper = function(conf)
 
 BlocklyWrapper.prototype.changeListener = function(e)
 {
-    if (this.isLoading) return; // DOES NOT WORK!
     var that = this;
     if (this.saveTimeout == null){
         this.saveTimeout = setTimeout(function()
         {
-            if (that.isLoading) return; // Necessary so if new program is opened, previous will not be replaced with new
             that.conf.onChange(that.getJS(), that.getXml(), e);
             that.saveTimeout = null;
         }, 500);
     }
-    
 };
 
 BlocklyWrapper.prototype.update = function(prog)
 {
-    var that = this;
-    this.isLoading = true;
     this.workspace.clear();
     var xml = (typeof prog.xml == "undefined") ? "" : prog.xml;
     var xmlDom = Blockly.Xml.textToDom(xml);
+
+    Blockly.Events.disable();
     Blockly.Xml.domToWorkspace(
             xmlDom,
             this.workspace
         );    
-    setTimeout(function(){
-        that.isLoading = false; // Blockly triggers onChange asynchronously after workspace updated
-    }, 500);
+    Blockly.Events.enable();
 };
 
 BlocklyWrapper.prototype.show = function(prog)

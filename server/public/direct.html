@@ -42,6 +42,8 @@
         <script src="js/progman.js"></script>
         <script src="js/serverconn.js"></script>
 
+        <script src="js/ui/progbutton.js"></script>
+
         <script src="js/blockly/blocks.js"></script>
         <script src="js/blockly/gens.js"></script>
 
@@ -52,9 +54,11 @@
         </style>
     </head>
     <body data-role="page">
-        <div id="debug"></div>
+        
         <div class="turtle turtle_large" style="width: 300px; height: 350px"></div>
+        
         <div class="joystick" style="width: 350px; height: 350px"></div>
+        
         <div class="editor-dialog dialog-cont " style="background-color: white">
             <div class="control-bar" style="vertical-align: bottom;">
                 <div class="turtle" style="width: 60px; height: 60px; "></div>
@@ -64,12 +68,22 @@
             </div>
             <div class="blockly-container"><div></div></div>
         </div>
+        
+        <br/>
+        
         <div class="prog-utils-container">
             <button class="ui-btn ui-corner-all ui-btn-inline add">
                 <span class="material-icons">add</span>
             </button>
         </div>
         <div class="prog-container"></div>
+        <div class="text-output-container">
+            <span class="material-icons icon-program-delete icon-program">delete</span>
+            <div class="text-output">
+                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+            </div>
+        </div>
+        
         <br/>
         
         <span class="material-icons icon-program-delete icon-program">delete_forever</span>
@@ -109,25 +123,117 @@
                 </statement>
             </block>
         </xml>
-        
-        
+
         <xml id="toolbox" style="display: none">
-            <category name="Stuff" colour="#5CA65C">
-                <block type="controls_if"></block>
-                <block type="logic_compare"></block>
-                <block type="controls_repeat_ext"></block>
-                <block type="math_number"></block>
-                <block type="math_arithmetic"></block>
-                <block type="text"></block>
-                <block type="text_print"></block>
+            <category name="Controls" colour="#ffffff">
             </category>
-            <category name="Time" colour="#995599">
+            <category name="Lists" colour="#888888">
+                <block type="math_number"></block>
+            </category>
+            <category name="Logic" colour="#ffffff">
+            </category>
+            <category name="Loops" colour="#44ee44">
+                <block type="controls_repeat_ext"></block>
+            </category>
+            <category name="Maths" colour="#888888">
+                <block type="math_number"></block>
+            </category>
+            <category name="Procedures" colour="#ffffff">
+            </category>
+            <category name="Text" colour="#888888">
+                <block type="text"></block>
+            </category>
+            <category name="Variables" colour="#ffffff">
+            </category>
+            <category name="Time" colour="#ee4444">
                 <block type="time_sleep_input"></block>
                 <block type="time_sleep_field"></block>
             </category>
-            <category name="Output" colour="#995555">
+            <category name="Output" colour="#ee4444">
                 <block type="output_green_led_field"></block>
+                <block type="text_print"></block>
             </category>
+            <category name="__Colour__" colour="#000000">
+                <block type="colour_picker"></block>
+                <block type="colour_random"></block>
+                <block type="colour_rgb"></block>
+                <block type="colour_blend"></block>
+            </category>
+            <category name="__Controls__" colour="#000000">
+                <block type="controls_if"></block>
+                <block type="controls_repeat"></block>
+                <block type="controls_whileUntil"></block>
+                <block type="controls_for"></block>
+                <block type="controls_forEach"></block>
+                <block type="controls_flow_statements"></block>
+            </category>
+            <category name="__Lists__" colour="#000000">
+                <block type="lists_create_empty"></block>
+                <block type="lists_create_with"></block>
+                <block type="lists_create_with_container"></block>
+                <block type="lists_create_with_item"></block>
+                <block type="lists_repeat"></block>
+                <block type="lists_length"></block>
+                <block type="lists_isEmpty"></block>
+                <block type="lists_indexOf"></block>
+                <block type="lists_getIndex"></block>
+                <block type="lists_setIndex"></block>
+                <block type="lists_getSublist"></block>
+                <block type="lists_sort"></block>
+                <block type="lists_split"></block>
+            </category>
+            <category name="__Logic__" colour="#000000">
+                <block type="logic_boolean"></block>
+                <block type="logic_compare"></block>
+                <block type="logic_null"></block>
+                <block type="logic_negate"></block>
+                <block type="logic_operation"></block>
+                <block type="logic_ternary"></block>
+            </category>
+            <category name="__Math__" colour="#000000">
+                <block type="math_arithmetic"></block>
+                <block type="math_single"></block>
+                <block type="math_trig"></block>
+                <block type="math_constant"></block>
+                <block type="math_number_property"></block>
+                <block type="math_change"></block>
+                <block type="math_round"></block>
+                <block type="math_on_list"></block>
+                <block type="math_modulo"></block>
+                <block type="math_constrain"></block>
+                <block type="math_random_int"></block>
+                <block type="math_random_float"></block>
+            </category>
+            <category name="__Procedures__" colour="#000000">
+                <block type="procedures_defnoreturn"></block>
+                <block type="procedures_defreturn"></block>
+                <block type="procedures_mutatorcontainer"></block>
+                <block type="procedures_mutatorarg"></block>
+                <block type="procedures_callnoreturn"></block>
+                <block type="procedures_callreturn"></block>
+                <block type="procedures_ifreturn"></block>
+            </category>
+            <category name="__Text__" colour="#000000">
+                <block type="text_join"></block>
+                <block type="text_create_join_container"></block>
+                <block type="text_create_join_item"></block>
+                <block type="text_append"></block>
+                <block type="text_length"></block>
+                <block type="text_isEmpty"></block>
+                <block type="text_indexOf"></block>
+                <block type="text_charAt"></block>
+                <block type="text_getSubstring"></block>
+                <block type="text_changeCase"></block>
+                <block type="text_trim"></block>
+                <block type="text_print"></block>
+                <block type="text_prompt_ext"></block>
+                <block type="text_prompt"></block>
+            </category>
+            <category name="__Variables__" colour="#000000">
+                <block type="variables_get"></block>
+                <block type="variables_set"></block>
+            </category>
+            
         </xml>
         
     </body>
